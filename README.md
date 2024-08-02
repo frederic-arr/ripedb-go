@@ -1,6 +1,11 @@
 # RIPE Databse Go Client
 This is a Go client for the RIPE Database RESTful Web Service API. It is a simple wrapper around the API, providing a more convenient way to interact with the RIPE Database.
 
+## Installation
+```bash
+go install github.com/frederic-arr/ripedb-go/cmd/ripedb@latest
+```
+
 ## Usage
 ```bash
 ripedb <resource> <key>
