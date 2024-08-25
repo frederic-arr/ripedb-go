@@ -1,4 +1,4 @@
-package ripedb
+package models
 
 type ObjectMessageArgValueModel struct {
 	Value string `json:"value"`

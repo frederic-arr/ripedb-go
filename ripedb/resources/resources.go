@@ -1,6 +1,10 @@
-package ripedb
+package resources
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/frederic-arr/ripedb-go/ripedb/models"
+)
 
 type commonAttributes struct {
 	Org          []string
@@ -260,7 +264,7 @@ type RtrSetModel struct {
 	MntLower []string
 }
 
-func commonAttributesFromObject(obj *WhoisObjectModel) *commonAttributes {
+func commonAttributesFromObject(obj *models.WhoisObjectModel) *commonAttributes {
 	attrs := commonAttributes{}
 	for _, attr := range obj.Attributes.Attribute {
 		value := attr.Value.(string)
@@ -289,7 +293,7 @@ func commonAttributesFromObject(obj *WhoisObjectModel) *commonAttributes {
 	return &attrs
 }
 
-func asBlock(obj *WhoisObjectModel) (*AsBlockModel, error) {
+func AsBlockFromModel(obj *models.WhoisObjectModel) (*AsBlockModel, error) {
 	if obj == nil {
 		return nil, errors.New("object is nil")
 	}
@@ -314,7 +318,7 @@ func asBlock(obj *WhoisObjectModel) (*AsBlockModel, error) {
 	return &model, nil
 }
 
-func asSet(obj *WhoisObjectModel) (*AsSetModel, error) {
+func AsSetFromModel(obj *models.WhoisObjectModel) (*AsSetModel, error) {
 	if obj == nil {
 		return nil, errors.New("object is nil")
 	}
@@ -343,7 +347,7 @@ func asSet(obj *WhoisObjectModel) (*AsSetModel, error) {
 	return &model, nil
 }
 
-func autNum(obj *WhoisObjectModel) (*AutNumModel, error) {
+func AutNumFromModel(obj *models.WhoisObjectModel) (*AutNumModel, error) {
 	if obj == nil {
 		return nil, errors.New("object is nil")
 	}
@@ -392,7 +396,7 @@ func autNum(obj *WhoisObjectModel) (*AutNumModel, error) {
 	return &model, nil
 }
 
-func domain(obj *WhoisObjectModel) (*DomainModel, error) {
+func DomainFromModel(obj *models.WhoisObjectModel) (*DomainModel, error) {
 	if obj == nil {
 		return nil, errors.New("object is nil")
 	}
@@ -421,7 +425,7 @@ func domain(obj *WhoisObjectModel) (*DomainModel, error) {
 	return &model, nil
 }
 
-func filterSet(obj *WhoisObjectModel) (*FilterSetModel, error) {
+func FilterSetFromModel(obj *models.WhoisObjectModel) (*FilterSetModel, error) {
 	if obj == nil {
 		return nil, errors.New("object is nil")
 	}
@@ -450,7 +454,7 @@ func filterSet(obj *WhoisObjectModel) (*FilterSetModel, error) {
 	return &model, nil
 }
 
-func inetRtr(obj *WhoisObjectModel) (*InetRtrModel, error) {
+func InetRtrFromModel(obj *models.WhoisObjectModel) (*InetRtrModel, error) {
 	if obj == nil {
 		return nil, errors.New("object is nil")
 	}
@@ -487,7 +491,7 @@ func inetRtr(obj *WhoisObjectModel) (*InetRtrModel, error) {
 	return &model, nil
 }
 
-func inet6Num(obj *WhoisObjectModel) (*Inet6NumModel, error) {
+func Inet6NumFromModel(obj *models.WhoisObjectModel) (*Inet6NumModel, error) {
 	if obj == nil {
 		return nil, errors.New("object is nil")
 	}
@@ -536,7 +540,7 @@ func inet6Num(obj *WhoisObjectModel) (*Inet6NumModel, error) {
 	return &model, nil
 }
 
-func inetNum(obj *WhoisObjectModel) (*InetNumModel, error) {
+func InetNumFromModel(obj *models.WhoisObjectModel) (*InetNumModel, error) {
 	if obj == nil {
 		return nil, errors.New("object is nil")
 	}
@@ -585,7 +589,7 @@ func inetNum(obj *WhoisObjectModel) (*InetNumModel, error) {
 	return &model, nil
 }
 
-func irt(obj *WhoisObjectModel) (*IrtModel, error) {
+func IrtFromModel(obj *models.WhoisObjectModel) (*IrtModel, error) {
 	if obj == nil {
 		return nil, errors.New("object is nil")
 	}
@@ -626,7 +630,7 @@ func irt(obj *WhoisObjectModel) (*IrtModel, error) {
 	return &model, nil
 }
 
-func keyCert(obj *WhoisObjectModel) (*KeyCertModel, error) {
+func KeyCertFromModel(obj *models.WhoisObjectModel) (*KeyCertModel, error) {
 	if obj == nil {
 		return nil, errors.New("object is nil")
 	}
@@ -655,7 +659,7 @@ func keyCert(obj *WhoisObjectModel) (*KeyCertModel, error) {
 	return &model, nil
 }
 
-func mntner(obj *WhoisObjectModel) (*MntnerModel, error) {
+func MntnerFromModel(obj *models.WhoisObjectModel) (*MntnerModel, error) {
 	if obj == nil {
 		return nil, errors.New("object is nil")
 	}
@@ -688,7 +692,7 @@ func mntner(obj *WhoisObjectModel) (*MntnerModel, error) {
 	return &model, nil
 }
 
-func organisation(obj *WhoisObjectModel) (*OrganisationModel, error) {
+func OrganisationFromModel(obj *models.WhoisObjectModel) (*OrganisationModel, error) {
 	if obj == nil {
 		return nil, errors.New("object is nil")
 	}
@@ -737,7 +741,7 @@ func organisation(obj *WhoisObjectModel) (*OrganisationModel, error) {
 	return &model, nil
 }
 
-func peeringSet(obj *WhoisObjectModel) (*PeeringSetModel, error) {
+func PeeringSetFromModel(obj *models.WhoisObjectModel) (*PeeringSetModel, error) {
 	if obj == nil {
 		return nil, errors.New("object is nil")
 	}
@@ -766,7 +770,7 @@ func peeringSet(obj *WhoisObjectModel) (*PeeringSetModel, error) {
 	return &model, nil
 }
 
-func person(obj *WhoisObjectModel) (*PersonModel, error) {
+func PersonFromModel(obj *models.WhoisObjectModel) (*PersonModel, error) {
 	if obj == nil {
 		return nil, errors.New("object is nil")
 	}
@@ -799,7 +803,7 @@ func person(obj *WhoisObjectModel) (*PersonModel, error) {
 	return &model, nil
 }
 
-func role(obj *WhoisObjectModel) (*RoleModel, error) {
+func RoleFromModel(obj *models.WhoisObjectModel) (*RoleModel, error) {
 	if obj == nil {
 		return nil, errors.New("object is nil")
 	}
@@ -834,7 +838,7 @@ func role(obj *WhoisObjectModel) (*RoleModel, error) {
 	return &model, nil
 }
 
-func route(obj *WhoisObjectModel) (*RouteModel, error) {
+func RouteFromModel(obj *models.WhoisObjectModel) (*RouteModel, error) {
 	if obj == nil {
 		return nil, errors.New("object is nil")
 	}
@@ -881,7 +885,7 @@ func route(obj *WhoisObjectModel) (*RouteModel, error) {
 	return &model, nil
 }
 
-func routeSet(obj *WhoisObjectModel) (*RouteSetModel, error) {
+func RouteSetFromModel(obj *models.WhoisObjectModel) (*RouteSetModel, error) {
 	if obj == nil {
 		return nil, errors.New("object is nil")
 	}
@@ -912,7 +916,7 @@ func routeSet(obj *WhoisObjectModel) (*RouteSetModel, error) {
 	return &model, nil
 }
 
-func route6(obj *WhoisObjectModel) (*Route6Model, error) {
+func Route6FromModel(obj *models.WhoisObjectModel) (*Route6Model, error) {
 	if obj == nil {
 		return nil, errors.New("object is nil")
 	}
@@ -959,7 +963,7 @@ func route6(obj *WhoisObjectModel) (*Route6Model, error) {
 	return &model, nil
 }
 
-func rtrSet(obj *WhoisObjectModel) (*RtrSetModel, error) {
+func RtrSetFromModel(obj *models.WhoisObjectModel) (*RtrSetModel, error) {
 	if obj == nil {
 		return nil, errors.New("object is nil")
 	}
