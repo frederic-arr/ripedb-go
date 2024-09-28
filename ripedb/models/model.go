@@ -1,5 +1,7 @@
 package models
 
+import "fmt"
+
 type ObjectMessageArgValue struct {
 	Value string `json:"value"`
 }
@@ -135,4 +137,16 @@ type QueryString struct {
 
 type Objects struct {
 	Object []Object `json:"object"`
+}
+
+func (m *Resource) FindOne() (*Object, error) {
+	if m.Objects == nil || m.Objects.Object == nil || len(m.Objects.Object) == 0 {
+		return nil, fmt.Errorf("no objects found")
+	}
+
+	if len(m.Objects.Object) > 1 {
+		return nil, fmt.Errorf("more than one object found")
+	}
+
+	return &m.Objects.Object[0], nil
 }

@@ -89,13 +89,5 @@ func findOne(c RipeDbClient, source string, resource string, key string) (*model
 		return nil, err
 	}
 
-	if resp.Objects == nil || resp.Objects.Object == nil || len(resp.Objects.Object) == 0 {
-		return nil, fmt.Errorf("no objects found")
-	}
-
-	if len(resp.Objects.Object) > 1 {
-		return nil, fmt.Errorf("more than one object found")
-	}
-
-	return &resp.Objects.Object[0], nil
+	return resp.FindOne()
 }
