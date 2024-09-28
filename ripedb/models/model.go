@@ -1,10 +1,10 @@
 package models
 
-type ObjectMessageArgValueModel struct {
+type ObjectMessageArgValue struct {
 	Value string `json:"value"`
 }
 
-type WhoisLinkModel struct {
+type Link struct {
 	Type string `json:"type"`
 	Href string `json:"href"`
 }
@@ -14,22 +14,22 @@ type StatusOption struct {
 	Value string `json:"value"`
 }
 
-type AttributeModel struct {
-	Name             string          `json:"name"`
-	Value            interface{}     `json:"value,omitempty"`
-	Link             *WhoisLinkModel `json:"link,omitempty"`
-	ReferencedType   *string         `json:"referenced-type,omitempty"`
-	Error            *string         `json:"$$error,omitempty"`
-	Info             *string         `json:"$$info,omitempty"`
-	Invalid          *bool           `json:"$$invalid,omitempty"`
-	ID               *string         `json:"$$id,omitempty"`
-	Comment          *string         `json:"comment,omitempty"`
-	Success          *string         `json:"$$success,omitempty"`
-	StatusOptionList []StatusOption  `json:"$$statusOptionList,omitempty"`
-	Hidden           *bool           `json:"$$hidden,omitempty"`
-	Disable          *bool           `json:"$$disable,omitempty"`
-	HashKey          *string         `json:"$$hashKey,omitempty"`
-	Meta             *Meta           `json:"$$meta,omitempty"`
+type Attribute struct {
+	Name             string         `json:"name"`
+	Value            interface{}    `json:"value,omitempty"`
+	Link             *Link          `json:"link,omitempty"`
+	ReferencedType   *string        `json:"referenced-type,omitempty"`
+	Error            *string        `json:"$$error,omitempty"`
+	Info             *string        `json:"$$info,omitempty"`
+	Invalid          *bool          `json:"$$invalid,omitempty"`
+	ID               *string        `json:"$$id,omitempty"`
+	Comment          *string        `json:"comment,omitempty"`
+	Success          *string        `json:"$$success,omitempty"`
+	StatusOptionList []StatusOption `json:"$$statusOptionList,omitempty"`
+	Hidden           *bool          `json:"$$hidden,omitempty"`
+	Disable          *bool          `json:"$$disable,omitempty"`
+	HashKey          *string        `json:"$$hashKey,omitempty"`
+	Meta             *Meta          `json:"$$meta,omitempty"`
 }
 
 type Meta struct {
@@ -45,12 +45,12 @@ type Meta struct {
 	Short      *string  `json:"$$short,omitempty"`
 }
 
-type ObjectMessageModel struct {
-	Attribute *AttributeModel              `json:"attribute,omitempty"`
-	Severity  *string                      `json:"severity,omitempty"`
-	Text      *string                      `json:"text,omitempty"`
-	Args      []ObjectMessageArgValueModel `json:"args,omitempty"`
-	PlainText *string                      `json:"plainText,omitempty"`
+type ObjectMessage struct {
+	Attribute *Attribute              `json:"attribute,omitempty"`
+	Severity  *string                 `json:"severity,omitempty"`
+	Text      *string                 `json:"text,omitempty"`
+	Args      []ObjectMessageArgValue `json:"args,omitempty"`
+	PlainText *string                 `json:"plainText,omitempty"`
 }
 
 type AbuseCModel struct {
@@ -65,9 +65,9 @@ type Version struct {
 	Timestamp string `json:"timestamp"`
 }
 
-type WhoisObjectModel struct {
+type Object struct {
 	Type           *string         `json:"type,omitempty"`
-	Link           *WhoisLinkModel `json:"link,omitempty"`
+	Link           *Link           `json:"link,omitempty"`
 	Source         Source          `json:"source"`
 	PrimaryKey     *PrimaryKey     `json:"primary-key,omitempty"`
 	Attributes     Attributes      `json:"attributes"`
@@ -83,15 +83,15 @@ type Source struct {
 }
 
 type PrimaryKey struct {
-	Attribute []AttributeModel `json:"attribute"`
+	Attribute []Attribute `json:"attribute"`
 }
 
 type Attributes struct {
-	Attribute []AttributeModel `json:"attribute"`
+	Attribute []Attribute `json:"attribute"`
 }
 
 type ObjectMessages struct {
-	ObjectMessage []ObjectMessageModel `json:"objectmessage"`
+	ObjectMessage []ObjectMessage `json:"objectmessage"`
 }
 
 type ResourceHolder struct {
@@ -99,18 +99,18 @@ type ResourceHolder struct {
 	Name string `json:"name"`
 }
 
-type WhoisResponseModel struct {
-	Link               *WhoisLinkModel `json:"link,omitempty"`
-	ErrorMessages      *ErrorMessages  `json:"errormessages,omitempty"`
-	Service            *Service        `json:"service,omitempty"`
-	Parameters         *Parameters     `json:"parameters,omitempty"`
-	Objects            *Objects        `json:"objects,omitempty"`
-	TermsAndConditions interface{}     `json:"terms-and-conditions,omitempty"`
-	Version            *Version        `json:"version,omitempty"`
+type Resource struct {
+	Link               *Link          `json:"link,omitempty"`
+	ErrorMessages      *ErrorMessages `json:"errormessages,omitempty"`
+	Service            *Service       `json:"service,omitempty"`
+	Parameters         *Parameters    `json:"parameters,omitempty"`
+	Objects            *Objects       `json:"objects,omitempty"`
+	TermsAndConditions interface{}    `json:"terms-and-conditions,omitempty"`
+	Version            *Version       `json:"version,omitempty"`
 }
 
 type ErrorMessages struct {
-	ErrorMessage []ObjectMessageModel `json:"errormessage"`
+	ErrorMessage []ObjectMessage `json:"errormessage"`
 }
 
 type Service struct {
@@ -134,13 +134,5 @@ type QueryString struct {
 }
 
 type Objects struct {
-	Object []WhoisObjectModel `json:"object"`
-}
-
-type MntByModel struct {
-	Auth  []string `json:"auth,omitempty"`
-	Key   string   `json:"key"`
-	Mine  *bool    `json:"mine,omitempty"`
-	Type  string   `json:"type"`
-	IsNew *bool    `json:"isNew,omitempty"`
+	Object []Object `json:"object"`
 }

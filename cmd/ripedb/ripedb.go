@@ -13,8 +13,10 @@ type Context struct {
 }
 
 var CLI struct {
-	Debug bool   `help:"Enable debug mode."`
-	Get   GetCmd `cmd:"" help:"Fetch a resource from the RIPE database."`
+	Debug    bool    `help:"Enable debug mode."`
+	User     *string `env:"RIPEDB_USER" help:"The user to use for authentication."`
+	Password *string `env:"RIPEDB_PASSWORD" help:"The password to use for authentication."`
+	Get      GetCmd  `cmd:"" help:"Fetch a resource from the RIPE database."`
 }
 
 type GetCmd struct {
@@ -23,13 +25,11 @@ type GetCmd struct {
 	Format   bool   `default:"true" negatable:"" short:"f" help:"Format the output or return the resource in its original formatting (including spaces, end-of-lines)."`
 }
 
-func (c *GetCmd) Run(ctx *Context) error {
-	client := ripedb.NewRipeAnonymousClient()
-
+func (c *GetCmd) Run(ctx *Context, client *ripedb.RipeDbClient) error {
 	resource := c.Resource
 	key := c.Key
 
-	resp, err := client.Get(resource, key)
+	resp, err := (*client).Get("RIPE", resource, key)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -66,7 +66,6 @@ func (c *GetCmd) Run(ctx *Context) error {
 		}
 
 		if attr.Comment != nil {
-			// Print in grey
 			fmt.Printf(" \033[90m# %s\033[0m", *attr.Comment)
 		}
 
@@ -78,6 +77,14 @@ func (c *GetCmd) Run(ctx *Context) error {
 
 func main() {
 	ctx := kong.Parse(&CLI)
-	err := ctx.Run(&Context{Debug: CLI.Debug})
+
+	var client ripedb.RipeDbClient
+	if CLI.Password != nil {
+		client = ripedb.NewRipePasswordClient(CLI.User, *CLI.Password)
+	} else {
+		client = ripedb.NewRipeAnonymousClient()
+	}
+
+	err := ctx.Run(&Context{Debug: CLI.Debug}, &client)
 	ctx.FatalIfErrorf(err)
 }

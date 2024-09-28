@@ -2,6 +2,7 @@ package clients
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 
@@ -14,13 +15,18 @@ type RipeAnonymousClient struct {
 	Format   bool
 }
 
-func (c *RipeAnonymousClient) Get(resource string, key string) (*models.WhoisResponseModel, error) {
+func (c *RipeAnonymousClient) request(method string, source string, resource string, key string, body io.Reader) (*models.Resource, error) {
 	httpClient := &http.Client{}
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/ripe/%s/%s", c.Endpoint, resource, url.PathEscape(key)), nil)
-	req.Header.Add("Accept", "application/json")
+	req, err := http.NewRequest(method, fmt.Sprintf("%s/%s/%s/%s", c.Endpoint, source, resource, url.PathEscape(key)), body)
+	if err != nil {
+		return nil, err
+	}
 
+	req.Header.Add("Accept", "application/json")
 	if !c.Format {
-		req.URL.Query().Add("unformatted", "")
+		q := req.URL.Query()
+		q.Add("unformatted", "")
+		req.URL.RawQuery = q.Encode()
 	}
 
 	resp, err := httpClient.Do(req)
@@ -32,8 +38,24 @@ func (c *RipeAnonymousClient) Get(resource string, key string) (*models.WhoisRes
 	return parseResponse(*resp)
 }
 
-func (c *RipeAnonymousClient) GetAsBlock(key string) (*resources.AsBlockModel, error) {
-	obj, err := findOne(c, "as-block", key)
+func (c *RipeAnonymousClient) Get(source string, resource string, key string) (*models.Resource, error) {
+	return c.request("GET", source, resource, key, nil)
+}
+
+func (c *RipeAnonymousClient) Post(source string, resource string, data models.Resource) (*models.Resource, error) {
+	return nil, fmt.Errorf("cannot create resources on anonymous endpoint")
+}
+
+func (c *RipeAnonymousClient) Put(source string, resource string, key string, data models.Resource) (*models.Resource, error) {
+	return nil, fmt.Errorf("cannot update resources on anonymous endpoint")
+}
+
+func (c *RipeAnonymousClient) Delete(source string, resource string, key string) (*models.Resource, error) {
+	return nil, fmt.Errorf("cannot delete resources on anonymous endpoint")
+}
+
+func (c *RipeAnonymousClient) GetAsBlock(source string, key string) (*resources.AsBlockModel, error) {
+	obj, err := findOne(c, source, "as-block", key)
 	if err != nil {
 		return nil, err
 	}
@@ -41,8 +63,8 @@ func (c *RipeAnonymousClient) GetAsBlock(key string) (*resources.AsBlockModel, e
 	return resources.AsBlockFromModel(obj)
 }
 
-func (c *RipeAnonymousClient) GetAsSet(key string) (*resources.AsSetModel, error) {
-	obj, err := findOne(c, "as-set", key)
+func (c *RipeAnonymousClient) GetAsSet(source string, key string) (*resources.AsSetModel, error) {
+	obj, err := findOne(c, source, "as-set", key)
 	if err != nil {
 		return nil, err
 	}
@@ -50,8 +72,8 @@ func (c *RipeAnonymousClient) GetAsSet(key string) (*resources.AsSetModel, error
 	return resources.AsSetFromModel(obj)
 }
 
-func (c *RipeAnonymousClient) GetAutNum(key string) (*resources.AutNumModel, error) {
-	obj, err := findOne(c, "aut-num", key)
+func (c *RipeAnonymousClient) GetAutNum(source string, key string) (*resources.AutNumModel, error) {
+	obj, err := findOne(c, source, "aut-num", key)
 	if err != nil {
 		return nil, err
 	}
@@ -59,8 +81,8 @@ func (c *RipeAnonymousClient) GetAutNum(key string) (*resources.AutNumModel, err
 	return resources.AutNumFromModel(obj)
 }
 
-func (c *RipeAnonymousClient) GetDomain(key string) (*resources.DomainModel, error) {
-	obj, err := findOne(c, "domain", key)
+func (c *RipeAnonymousClient) GetDomain(source string, key string) (*resources.DomainModel, error) {
+	obj, err := findOne(c, source, "domain", key)
 	if err != nil {
 		return nil, err
 	}
@@ -68,8 +90,8 @@ func (c *RipeAnonymousClient) GetDomain(key string) (*resources.DomainModel, err
 	return resources.DomainFromModel(obj)
 }
 
-func (c *RipeAnonymousClient) GetFilterSet(key string) (*resources.FilterSetModel, error) {
-	obj, err := findOne(c, "filter-set", key)
+func (c *RipeAnonymousClient) GetFilterSet(source string, key string) (*resources.FilterSetModel, error) {
+	obj, err := findOne(c, source, "filter-set", key)
 	if err != nil {
 		return nil, err
 	}
@@ -77,8 +99,8 @@ func (c *RipeAnonymousClient) GetFilterSet(key string) (*resources.FilterSetMode
 	return resources.FilterSetFromModel(obj)
 }
 
-func (c *RipeAnonymousClient) GetInetRtr(key string) (*resources.InetRtrModel, error) {
-	obj, err := findOne(c, "inet-rtr", key)
+func (c *RipeAnonymousClient) GetInetRtr(source string, key string) (*resources.InetRtrModel, error) {
+	obj, err := findOne(c, source, "inet-rtr", key)
 	if err != nil {
 		return nil, err
 	}
@@ -86,8 +108,8 @@ func (c *RipeAnonymousClient) GetInetRtr(key string) (*resources.InetRtrModel, e
 	return resources.InetRtrFromModel(obj)
 }
 
-func (c *RipeAnonymousClient) GetInet6Num(key string) (*resources.Inet6NumModel, error) {
-	obj, err := findOne(c, "inet6num", key)
+func (c *RipeAnonymousClient) GetInet6Num(source string, key string) (*resources.Inet6NumModel, error) {
+	obj, err := findOne(c, source, "inet6num", key)
 	if err != nil {
 		return nil, err
 	}
@@ -95,8 +117,8 @@ func (c *RipeAnonymousClient) GetInet6Num(key string) (*resources.Inet6NumModel,
 	return resources.Inet6NumFromModel(obj)
 }
 
-func (c *RipeAnonymousClient) GetInetNum(key string) (*resources.InetNumModel, error) {
-	obj, err := findOne(c, "inetnum", key)
+func (c *RipeAnonymousClient) GetInetNum(source string, key string) (*resources.InetNumModel, error) {
+	obj, err := findOne(c, source, "inetnum", key)
 	if err != nil {
 		return nil, err
 	}
@@ -104,8 +126,8 @@ func (c *RipeAnonymousClient) GetInetNum(key string) (*resources.InetNumModel, e
 	return resources.InetNumFromModel(obj)
 }
 
-func (c *RipeAnonymousClient) GetIrt(key string) (*resources.IrtModel, error) {
-	obj, err := findOne(c, "irt", key)
+func (c *RipeAnonymousClient) GetIrt(source string, key string) (*resources.IrtModel, error) {
+	obj, err := findOne(c, source, "irt", key)
 	if err != nil {
 		return nil, err
 	}
@@ -113,8 +135,8 @@ func (c *RipeAnonymousClient) GetIrt(key string) (*resources.IrtModel, error) {
 	return resources.IrtFromModel(obj)
 }
 
-func (c *RipeAnonymousClient) GetKeyCert(key string) (*resources.KeyCertModel, error) {
-	obj, err := findOne(c, "key-cert", key)
+func (c *RipeAnonymousClient) GetKeyCert(source string, key string) (*resources.KeyCertModel, error) {
+	obj, err := findOne(c, source, "key-cert", key)
 	if err != nil {
 		return nil, err
 	}
@@ -122,8 +144,8 @@ func (c *RipeAnonymousClient) GetKeyCert(key string) (*resources.KeyCertModel, e
 	return resources.KeyCertFromModel(obj)
 }
 
-func (c *RipeAnonymousClient) GetMntner(key string) (*resources.MntnerModel, error) {
-	obj, err := findOne(c, "mntner", key)
+func (c *RipeAnonymousClient) GetMntner(source string, key string) (*resources.MntnerModel, error) {
+	obj, err := findOne(c, source, "mntner", key)
 	if err != nil {
 		return nil, err
 	}
@@ -131,8 +153,8 @@ func (c *RipeAnonymousClient) GetMntner(key string) (*resources.MntnerModel, err
 	return resources.MntnerFromModel(obj)
 }
 
-func (c *RipeAnonymousClient) GetOrganisation(key string) (*resources.OrganisationModel, error) {
-	obj, err := findOne(c, "organisation", key)
+func (c *RipeAnonymousClient) GetOrganisation(source string, key string) (*resources.OrganisationModel, error) {
+	obj, err := findOne(c, source, "organisation", key)
 	if err != nil {
 		return nil, err
 	}
@@ -140,8 +162,8 @@ func (c *RipeAnonymousClient) GetOrganisation(key string) (*resources.Organisati
 	return resources.OrganisationFromModel(obj)
 }
 
-func (c *RipeAnonymousClient) GetPeeringSet(key string) (*resources.PeeringSetModel, error) {
-	obj, err := findOne(c, "peering-set", key)
+func (c *RipeAnonymousClient) GetPeeringSet(source string, key string) (*resources.PeeringSetModel, error) {
+	obj, err := findOne(c, source, "peering-set", key)
 	if err != nil {
 		return nil, err
 	}
@@ -149,8 +171,8 @@ func (c *RipeAnonymousClient) GetPeeringSet(key string) (*resources.PeeringSetMo
 	return resources.PeeringSetFromModel(obj)
 }
 
-func (c *RipeAnonymousClient) GetPerson(key string) (*resources.PersonModel, error) {
-	obj, err := findOne(c, "person", key)
+func (c *RipeAnonymousClient) GetPerson(source string, key string) (*resources.PersonModel, error) {
+	obj, err := findOne(c, source, "person", key)
 	if err != nil {
 		return nil, err
 	}
@@ -158,8 +180,8 @@ func (c *RipeAnonymousClient) GetPerson(key string) (*resources.PersonModel, err
 	return resources.PersonFromModel(obj)
 }
 
-func (c *RipeAnonymousClient) GetRole(key string) (*resources.RoleModel, error) {
-	obj, err := findOne(c, "role", key)
+func (c *RipeAnonymousClient) GetRole(source string, key string) (*resources.RoleModel, error) {
+	obj, err := findOne(c, source, "role", key)
 	if err != nil {
 		return nil, err
 	}
@@ -167,8 +189,8 @@ func (c *RipeAnonymousClient) GetRole(key string) (*resources.RoleModel, error) 
 	return resources.RoleFromModel(obj)
 }
 
-func (c *RipeAnonymousClient) GetRoute(key string) (*resources.RouteModel, error) {
-	obj, err := findOne(c, "route", key)
+func (c *RipeAnonymousClient) GetRoute(source string, key string) (*resources.RouteModel, error) {
+	obj, err := findOne(c, source, "route", key)
 	if err != nil {
 		return nil, err
 	}
@@ -176,8 +198,8 @@ func (c *RipeAnonymousClient) GetRoute(key string) (*resources.RouteModel, error
 	return resources.RouteFromModel(obj)
 }
 
-func (c *RipeAnonymousClient) GetRouteSet(key string) (*resources.RouteSetModel, error) {
-	obj, err := findOne(c, "route-set", key)
+func (c *RipeAnonymousClient) GetRouteSet(source string, key string) (*resources.RouteSetModel, error) {
+	obj, err := findOne(c, source, "route-set", key)
 	if err != nil {
 		return nil, err
 	}
@@ -185,8 +207,8 @@ func (c *RipeAnonymousClient) GetRouteSet(key string) (*resources.RouteSetModel,
 	return resources.RouteSetFromModel(obj)
 }
 
-func (c *RipeAnonymousClient) GetRoute6(key string) (*resources.Route6Model, error) {
-	obj, err := findOne(c, "route6", key)
+func (c *RipeAnonymousClient) GetRoute6(source string, key string) (*resources.Route6Model, error) {
+	obj, err := findOne(c, source, "route6", key)
 	if err != nil {
 		return nil, err
 	}
@@ -194,8 +216,8 @@ func (c *RipeAnonymousClient) GetRoute6(key string) (*resources.Route6Model, err
 	return resources.Route6FromModel(obj)
 }
 
-func (c *RipeAnonymousClient) GetRtrSet(key string) (*resources.RtrSetModel, error) {
-	obj, err := findOne(c, "rtr-set", key)
+func (c *RipeAnonymousClient) GetRtrSet(source string, key string) (*resources.RtrSetModel, error) {
+	obj, err := findOne(c, source, "rtr-set", key)
 	if err != nil {
 		return nil, err
 	}

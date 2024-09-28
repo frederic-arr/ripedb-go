@@ -5,6 +5,7 @@ import (
 	"github.com/frederic-arr/ripedb-go/ripedb/resources"
 )
 
+type RipeDbClient = clients.RipeDbClient
 type RipeAnonymousClient = clients.RipeAnonymousClient
 
 type AsBlockModel = resources.AsBlockModel
@@ -31,5 +32,14 @@ func NewRipeAnonymousClient() *RipeAnonymousClient {
 	return &RipeAnonymousClient{
 		Endpoint: clients.RIPE_PROD_ENDPOINT,
 		Format:   true,
+	}
+}
+
+func NewRipePasswordClient(user *string, password string) *clients.RipePasswordClient {
+	return &clients.RipePasswordClient{
+		Endpoint: clients.RIPE_PROD_ENDPOINT,
+		Format:   true,
+		User:     user,
+		Password: password,
 	}
 }
