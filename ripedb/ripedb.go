@@ -32,6 +32,7 @@ func NewRipeAnonymousClient() *RipeAnonymousClient {
 	return &RipeAnonymousClient{
 		Endpoint: clients.RIPE_PROD_ENDPOINT,
 		Format:   true,
+		Source:   "ripe",
 	}
 }
 
@@ -41,5 +42,6 @@ func NewRipePasswordClient(user *string, password string) *clients.RipePasswordC
 		Format:   true,
 		User:     user,
 		Password: password,
+		Source:   "ripe",
 	}
 }

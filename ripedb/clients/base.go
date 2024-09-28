@@ -10,30 +10,30 @@ import (
 )
 
 type RipeDbClient interface {
-	Get(source string, resource string, key string) (*models.Resource, error)
-	Post(source string, resource string, data models.Resource) (*models.Resource, error)
-	Put(source string, resource string, key string, data models.Resource) (*models.Resource, error)
-	Delete(source string, resource string, key string) (*models.Resource, error)
+	Get(resource string, key string) (*models.Resource, error)
+	Post(resource string, data models.Resource) (*models.Resource, error)
+	Put(resource string, key string, data models.Resource) (*models.Resource, error)
+	Delete(resource string, key string) (*models.Resource, error)
 
-	GetAsBlock(source string, key string) (*resources.AsBlockModel, error)
-	GetAsSet(source string, key string) (*resources.AsSetModel, error)
-	GetAutNum(source string, key string) (*resources.AutNumModel, error)
-	GetDomain(source string, key string) (*resources.DomainModel, error)
-	GetFilterSet(source string, key string) (*resources.FilterSetModel, error)
-	GetInetRtr(source string, key string) (*resources.InetRtrModel, error)
-	GetInet6Num(source string, key string) (*resources.Inet6NumModel, error)
-	GetInetNum(source string, key string) (*resources.InetNumModel, error)
-	GetIrt(source string, key string) (*resources.IrtModel, error)
-	GetKeyCert(source string, key string) (*resources.KeyCertModel, error)
-	GetMntner(source string, key string) (*resources.MntnerModel, error)
-	GetOrganisation(source string, key string) (*resources.OrganisationModel, error)
-	GetPeeringSet(source string, key string) (*resources.PeeringSetModel, error)
-	GetPerson(source string, key string) (*resources.PersonModel, error)
-	GetRole(source string, key string) (*resources.RoleModel, error)
-	GetRoute(source string, key string) (*resources.RouteModel, error)
-	GetRouteSet(source string, key string) (*resources.RouteSetModel, error)
-	GetRoute6(source string, key string) (*resources.Route6Model, error)
-	GetRtrSet(source string, key string) (*resources.RtrSetModel, error)
+	GetAsBlock(key string) (*resources.AsBlockModel, error)
+	GetAsSet(key string) (*resources.AsSetModel, error)
+	GetAutNum(key string) (*resources.AutNumModel, error)
+	GetDomain(key string) (*resources.DomainModel, error)
+	GetFilterSet(key string) (*resources.FilterSetModel, error)
+	GetInetRtr(key string) (*resources.InetRtrModel, error)
+	GetInet6Num(key string) (*resources.Inet6NumModel, error)
+	GetInetNum(key string) (*resources.InetNumModel, error)
+	GetIrt(key string) (*resources.IrtModel, error)
+	GetKeyCert(key string) (*resources.KeyCertModel, error)
+	GetMntner(key string) (*resources.MntnerModel, error)
+	GetOrganisation(key string) (*resources.OrganisationModel, error)
+	GetPeeringSet(key string) (*resources.PeeringSetModel, error)
+	GetPerson(key string) (*resources.PersonModel, error)
+	GetRole(key string) (*resources.RoleModel, error)
+	GetRoute(key string) (*resources.RouteModel, error)
+	GetRouteSet(key string) (*resources.RouteSetModel, error)
+	GetRoute6(key string) (*resources.Route6Model, error)
+	GetRtrSet(key string) (*resources.RtrSetModel, error)
 }
 
 const (
@@ -74,8 +74,8 @@ func parseResponse(resp http.Response) (*models.Resource, error) {
 	return whoisResponse, nil
 }
 
-func Lookup(c RipeDbClient, source string, resource string, key string) (*models.Resource, error) {
-	resp, err := c.Get(source, resource, key)
+func Lookup(c RipeDbClient, resource string, key string) (*models.Resource, error) {
+	resp, err := c.Get(resource, key)
 	if err != nil {
 		return nil, err
 	}
@@ -83,8 +83,8 @@ func Lookup(c RipeDbClient, source string, resource string, key string) (*models
 	return resp, nil
 }
 
-func findOne(c RipeDbClient, source string, resource string, key string) (*models.Object, error) {
-	resp, err := c.Get(source, resource, key)
+func findOne(c RipeDbClient, resource string, key string) (*models.Object, error) {
+	resp, err := c.Get(resource, key)
 	if err != nil {
 		return nil, err
 	}
