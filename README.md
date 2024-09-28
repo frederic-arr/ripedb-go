@@ -1,4 +1,4 @@
-# RIPE Databse Go Client
+# RIPE DB Go Client
 This is a Go client for the RIPE Database RESTful Web Service API. It is a simple wrapper around the API, providing a more convenient way to interact with the RIPE Database.
 
 ## Features
@@ -93,3 +93,7 @@ source:        RIPE # Filtered
 ```
 
 </details>
+
+## License
+
+Copyright (c) The RIPE DB Go Client Authors. [Apache 2.0 License](./LICENSE).
