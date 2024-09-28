@@ -35,7 +35,12 @@ func (c *RipeAnonymousClient) request(method string, source string, resource str
 	}
 
 	defer resp.Body.Close()
-	return parseResponse(*resp)
+
+	res, err := parseResponse(*resp)
+	if err != nil {
+		return nil, fmt.Errorf("error parsing response from URL `%s`: %w", req.URL.String(), err)
+	}
+	return res, nil
 }
 
 func (c *RipeAnonymousClient) Get(source string, resource string, key string) (*models.Resource, error) {
