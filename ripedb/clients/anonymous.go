@@ -20,6 +20,22 @@ type RipeAnonymousClient struct {
 	Source   string
 }
 
+func (c *RipeAnonymousClient) SetEndpoint(endpoint string) {
+	c.Endpoint = endpoint
+}
+
+func (c *RipeAnonymousClient) SetSource(source string) {
+	c.Source = source
+}
+
+func (c *RipeAnonymousClient) SetFilter(filter bool) {
+	c.Filter = filter
+}
+
+func (c *RipeAnonymousClient) SetFormat(format bool) {
+	c.Format = format
+}
+
 func (c *RipeAnonymousClient) request(method string, resource string, key string, body io.Reader) (*models.Resource, error) {
 	httpClient := &http.Client{}
 	req, err := http.NewRequest(method, fmt.Sprintf("%s/%s/%s/%s", c.Endpoint, c.Source, resource, url.PathEscape(key)), body)

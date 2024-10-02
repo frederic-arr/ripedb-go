@@ -24,6 +24,22 @@ type RipePasswordClient struct {
 	Source   string
 }
 
+func (c *RipePasswordClient) SetEndpoint(endpoint string) {
+	c.Endpoint = endpoint
+}
+
+func (c *RipePasswordClient) SetSource(source string) {
+	c.Source = source
+}
+
+func (c *RipePasswordClient) SetFilter(filter bool) {
+	c.Filter = filter
+}
+
+func (c *RipePasswordClient) SetFormat(format bool) {
+	c.Format = format
+}
+
 func (c *RipePasswordClient) request(method string, resource string, key string, body io.Reader) (*models.Resource, error) {
 	httpClient := &http.Client{}
 	var path string

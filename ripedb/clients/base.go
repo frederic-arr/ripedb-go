@@ -13,6 +13,11 @@ import (
 )
 
 type RipeDbClient interface {
+	SetEndpoint(endpoint string)
+	SetSource(source string)
+	SetFilter(filter bool)
+	SetFormat(format bool)
+
 	Get(resource string, key string) (*models.Resource, error)
 	Post(resource string, data models.Resource) (*models.Resource, error)
 	Put(resource string, key string, data models.Resource) (*models.Resource, error)
