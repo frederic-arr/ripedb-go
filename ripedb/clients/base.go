@@ -39,15 +39,6 @@ type RipeDbClient interface {
 	GetRtrSet(key string) (*resources.RtrSetModel, error)
 }
 
-const (
-	RIPE_TEST_ENDPOINT_INSECURE = "http://rest-test.db.ripe.net"
-	RIPE_TEST_ENDPOINT          = "https://rest-test.db.ripe.net"
-	RIPE_TEST_ENDPOINT_MTLS     = "https://rest-cert-test.db.ripe.net"
-	RIPE_PROD_ENDPOINT_INSECURE = "http://rest.db.ripe.net"
-	RIPE_PROD_ENDPOINT          = "https://rest.db.ripe.net"
-	RIPE_PROD_ENDPOINT_MTLS     = "https://rest-cert.db.ripe.net"
-)
-
 func gatherErrors(whoisResponse *models.Resource) []string {
 	errors := []string{}
 	if whoisResponse.ErrorMessages != nil {
