@@ -2,3 +2,5 @@ github.com/alecthomas/kong v0.9.0 h1:G5diXxc85KvoV2f0ZRVuMsi45IrBgx9zDNGNj165aPA
 github.com/alecthomas/kong v0.9.0/go.mod h1:Y47y5gKfHp1hDc7CH7OeXgLIpp+Q2m1Ni0L5s3bI8Os=
 github.com/frederic-arr/rpsl-go v0.0.0-20241002212917-c7347516fce2 h1:a0Mr8Pa+c//4ZYmgNzaMguv9HkvhaZEPpYlDfRomEBk=
 github.com/frederic-arr/rpsl-go v0.0.0-20241002212917-c7347516fce2/go.mod h1:CtPQg+MhImDmC0m3YP5PtZQFQTDQRX2yo2172ZTiYNY=
+github.com/frederic-arr/rpsl-go v0.0.0-20241002221514-be6f63d6cd52 h1:B3F+5edghBTE64cFhXiTHvi7EM9pUwBo8g4gXZTKMW8=
+github.com/frederic-arr/rpsl-go v0.0.0-20241002221514-be6f63d6cd52/go.mod h1:CtPQg+MhImDmC0m3YP5PtZQFQTDQRX2yo2172ZTiYNY=
