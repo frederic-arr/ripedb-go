@@ -13,6 +13,7 @@ import (
 
 	"github.com/frederic-arr/ripedb-go/ripedb/models"
 	"github.com/frederic-arr/ripedb-go/ripedb/resources"
+	"github.com/frederic-arr/rpsl-go"
 )
 
 type RipePasswordClient struct {
@@ -54,6 +55,16 @@ func (c *RipePasswordClient) request(method string, resource string, key string,
 	}
 
 	req.Header.Add("Accept", "application/json")
+	if method == "POST" || method == "PUT" {
+		req.Header.Add("Content-Type", "application/json")
+	}
+
+	// print body
+	if body != nil {
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(body)
+		fmt.Println(buf.String())
+	}
 
 	if c.User != nil {
 		req.SetBasicAuth(*c.User, c.Password)
@@ -82,6 +93,62 @@ func (c *RipePasswordClient) request(method string, resource string, key string,
 
 	defer resp.Body.Close()
 	return parseResponse(*resp)
+}
+
+func (c *RipePasswordClient) GetObject(resource string, key string) (*rpsl.Object, error) {
+	res, err := c.Get(resource, key)
+	if err != nil {
+		return nil, err
+	}
+
+	obj, err := res.FindOne()
+	if err != nil {
+		return nil, err
+	}
+
+	return obj.ToRpslObject()
+}
+
+func (c *RipePasswordClient) CreateObject(resource string, object *rpsl.Object) (*rpsl.Object, error) {
+	obj := models.ToModelObject(object)
+	res, err := c.Post(resource, obj.ToResource())
+	if err != nil {
+		return nil, err
+	}
+
+	rObj, err := res.FindOne()
+	if err != nil {
+		return nil, err
+	}
+
+	return rObj.ToRpslObject()
+}
+func (c *RipePasswordClient) UpdateObject(resource string, key string, object *rpsl.Object) (*rpsl.Object, error) {
+	obj := models.ToModelObject(object)
+	res, err := c.Put(resource, key, obj.ToResource())
+	if err != nil {
+		return nil, err
+	}
+
+	rObj, err := res.FindOne()
+	if err != nil {
+		return nil, err
+	}
+
+	return rObj.ToRpslObject()
+}
+func (c *RipePasswordClient) DeleteObject(resource string, key string) (*rpsl.Object, error) {
+	res, err := c.Delete(resource, key)
+	if err != nil {
+		return nil, err
+	}
+
+	obj, err := res.FindOne()
+	if err != nil {
+		return nil, err
+	}
+
+	return obj.ToRpslObject()
 }
 
 func (c *RipePasswordClient) Get(resource string, key string) (*models.Resource, error) {

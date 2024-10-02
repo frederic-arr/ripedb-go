@@ -10,6 +10,7 @@ import (
 
 	"github.com/frederic-arr/ripedb-go/ripedb/models"
 	"github.com/frederic-arr/ripedb-go/ripedb/resources"
+	"github.com/frederic-arr/rpsl-go"
 )
 
 type RipeDbClient interface {
@@ -17,6 +18,11 @@ type RipeDbClient interface {
 	SetSource(source string)
 	SetFilter(filter bool)
 	SetFormat(format bool)
+
+	GetObject(resource string, key string) (*rpsl.Object, error)
+	CreateObject(resource string, object *rpsl.Object) (*rpsl.Object, error)
+	UpdateObject(resource string, key string, object *rpsl.Object) (*rpsl.Object, error)
+	DeleteObject(resource string, key string) (*rpsl.Object, error)
 
 	Get(resource string, key string) (*models.Resource, error)
 	Post(resource string, data models.Resource) (*models.Resource, error)

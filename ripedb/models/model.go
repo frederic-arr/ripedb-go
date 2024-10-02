@@ -3,7 +3,11 @@
 
 package models
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/frederic-arr/rpsl-go"
+)
 
 type ObjectMessageArgValue struct {
 	Value string `json:"value"`
@@ -73,7 +77,7 @@ type Version struct {
 type Object struct {
 	Type           *string         `json:"type,omitempty"`
 	Link           *Link           `json:"link,omitempty"`
-	Source         Source          `json:"source"`
+	Source         *Source         `json:"source,omitempty"`
 	PrimaryKey     *PrimaryKey     `json:"primary-key,omitempty"`
 	Attributes     Attributes      `json:"attributes"`
 	ObjectMessages *ObjectMessages `json:"objectmessages,omitempty"`
@@ -152,4 +156,50 @@ func (m *Resource) FindOne() (*Object, error) {
 	}
 
 	return &m.Objects.Object[0], nil
+}
+
+func (m *Object) ToRpslObject() (*rpsl.Object, error) {
+	obj := rpsl.Object{
+		Attributes: make([]rpsl.Attribute, len(m.Attributes.Attribute)),
+	}
+
+	for i, attr := range m.Attributes.Attribute {
+		value, ok := attr.Value.(string)
+		if !ok {
+			return nil, fmt.Errorf("attribute value is not a string")
+		}
+
+		attr := rpsl.Attribute{
+			Name:  attr.Name,
+			Value: value,
+		}
+
+		obj.Attributes[i] = attr
+	}
+
+	return &obj, nil
+}
+
+func ToModelObject(o *rpsl.Object) Object {
+	attributes := make([]Attribute, len(o.Attributes))
+	for i, attr := range o.Attributes {
+		attributes[i] = Attribute{
+			Name:  attr.Name,
+			Value: attr.Value,
+		}
+	}
+
+	return Object{
+		Attributes: Attributes{
+			Attribute: attributes,
+		},
+	}
+}
+
+func (o *Object) ToResource() Resource {
+	return Resource{
+		Objects: &Objects{
+			Object: []Object{*o},
+		},
+	}
 }

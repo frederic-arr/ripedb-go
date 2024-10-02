@@ -11,6 +11,7 @@ import (
 
 	"github.com/frederic-arr/ripedb-go/ripedb/models"
 	"github.com/frederic-arr/ripedb-go/ripedb/resources"
+	"github.com/frederic-arr/rpsl-go"
 )
 
 type RipeAnonymousClient struct {
@@ -68,6 +69,30 @@ func (c *RipeAnonymousClient) request(method string, resource string, key string
 		return nil, fmt.Errorf("error parsing response from URL `%s`: %w", req.URL.String(), err)
 	}
 	return res, nil
+}
+
+func (c *RipeAnonymousClient) GetObject(resource string, key string) (*rpsl.Object, error) {
+	res, err := c.Get(resource, key)
+	if err != nil {
+		return nil, err
+	}
+
+	obj, err := res.FindOne()
+	if err != nil {
+		return nil, err
+	}
+
+	return obj.ToRpslObject()
+}
+
+func (c *RipeAnonymousClient) CreateObject(resource string, object *rpsl.Object) (*rpsl.Object, error) {
+	return nil, fmt.Errorf("cannot create resources on anonymous endpoint")
+}
+func (c *RipeAnonymousClient) UpdateObject(resource string, key string, object *rpsl.Object) (*rpsl.Object, error) {
+	return nil, fmt.Errorf("cannot update resources on anonymous endpoint")
+}
+func (c *RipeAnonymousClient) DeleteObject(resource string, key string) (*rpsl.Object, error) {
+	return nil, fmt.Errorf("cannot delete resources on anonymous endpoint")
 }
 
 func (c *RipeAnonymousClient) Get(resource string, key string) (*models.Resource, error) {
