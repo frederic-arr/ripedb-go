@@ -54,8 +54,8 @@ func gatherErrors(whoisResponse *models.Resource) []string {
 	errors := []string{}
 	if whoisResponse.ErrorMessages != nil {
 		for _, errorMessage := range whoisResponse.ErrorMessages.ErrorMessage {
-			if errorMessage.Text != nil {
-				errors = append(errors, *errorMessage.Text)
+			if errorMessage.PlainText != nil {
+				errors = append(errors, *errorMessage.PlainText)
 			}
 		}
 	}
@@ -70,7 +70,7 @@ func parseResponse(resp http.Response) (*models.Resource, error) {
 	if resp.StatusCode != http.StatusOK || err != nil {
 		if err == nil {
 			errors := gatherErrors(whoisResponse)
-			return nil, fmt.Errorf("error: %v", errors)
+			return nil, fmt.Errorf("ripedb-go request error: %v", errors)
 		}
 
 		return nil, err
