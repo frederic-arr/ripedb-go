@@ -17,6 +17,7 @@ import (
 
 type RipePasswordClient struct {
 	Endpoint string
+	Filter   bool
 	Format   bool
 	User     *string
 	Password string
@@ -49,6 +50,12 @@ func (c *RipePasswordClient) request(method string, resource string, key string,
 	if !c.Format {
 		q := req.URL.Query()
 		q.Add("unformatted", "")
+		req.URL.RawQuery = q.Encode()
+	}
+
+	if !c.Filter {
+		q := req.URL.Query()
+		q.Add("unfiltered", "")
 		req.URL.RawQuery = q.Encode()
 	}
 

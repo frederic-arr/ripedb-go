@@ -42,7 +42,8 @@ const (
 
 func NewRipeAnonymousClient() *RipeAnonymousClient {
 	return &RipeAnonymousClient{
-		Endpoint: clients.RIPE_PROD_ENDPOINT,
+		Endpoint: RIPE_PROD_ENDPOINT,
+		Filter:   false,
 		Format:   true,
 		Source:   "ripe",
 	}
@@ -50,7 +51,8 @@ func NewRipeAnonymousClient() *RipeAnonymousClient {
 
 func NewRipePasswordClient(user *string, password string) *clients.RipePasswordClient {
 	return &clients.RipePasswordClient{
-		Endpoint: clients.RIPE_PROD_ENDPOINT,
+		Endpoint: RIPE_PROD_ENDPOINT,
+		Filter:   false,
 		Format:   true,
 		User:     user,
 		Password: password,

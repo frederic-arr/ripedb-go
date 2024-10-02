@@ -16,6 +16,7 @@ import (
 type RipeAnonymousClient struct {
 	Endpoint string
 	Format   bool
+	Filter   bool
 	Source   string
 }
 
@@ -30,6 +31,12 @@ func (c *RipeAnonymousClient) request(method string, resource string, key string
 	if !c.Format {
 		q := req.URL.Query()
 		q.Add("unformatted", "")
+		req.URL.RawQuery = q.Encode()
+	}
+
+	if !c.Filter {
+		q := req.URL.Query()
+		q.Add("unfiltered", "")
 		req.URL.RawQuery = q.Encode()
 	}
 
