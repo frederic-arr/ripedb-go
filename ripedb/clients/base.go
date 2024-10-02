@@ -54,8 +54,13 @@ func gatherErrors(whoisResponse *models.Resource) []string {
 	errors := []string{}
 	if whoisResponse.ErrorMessages != nil {
 		for _, errorMessage := range whoisResponse.ErrorMessages.ErrorMessage {
-			if errorMessage.PlainText != nil {
-				errors = append(errors, *errorMessage.PlainText)
+			if errorMessage.Text != nil {
+				msg := *errorMessage.Text
+				for _, arg := range errorMessage.Args {
+					msg = fmt.Sprintf("%s %s", msg, arg)
+				}
+
+				errors = append(errors, msg)
 			}
 		}
 	}
