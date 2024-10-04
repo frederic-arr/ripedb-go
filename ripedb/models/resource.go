@@ -5,6 +5,7 @@ package models
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/frederic-arr/rpsl-go"
 )
@@ -158,7 +159,7 @@ func (m *Resource) FindOne() (*Object, error) {
 	return &m.Objects.Object[0], nil
 }
 
-func (m *Object) ToRpslObject() (*rpsl.Object, error) {
+func ModelObjectToRpslObject(m *Object) (*rpsl.Object, error) {
 	obj := rpsl.Object{
 		Attributes: make([]rpsl.Attribute, len(m.Attributes.Attribute)),
 	}
@@ -180,7 +181,7 @@ func (m *Object) ToRpslObject() (*rpsl.Object, error) {
 	return &obj, nil
 }
 
-func ToModelObject(o *rpsl.Object) Object {
+func NewObjectFromRpslObject(o *rpsl.Object) Object {
 	attributes := make([]Attribute, len(o.Attributes))
 	for i, attr := range o.Attributes {
 		attributes[i] = Attribute{
@@ -196,10 +197,53 @@ func ToModelObject(o *rpsl.Object) Object {
 	}
 }
 
-func (o *Object) ToResource() Resource {
+func NewResourceFromObject(o *Object) Resource {
 	return Resource{
 		Objects: &Objects{
 			Object: []Object{*o},
 		},
 	}
+}
+
+func NewResourceFromRpslObject(o *rpsl.Object) Resource {
+	obj := NewObjectFromRpslObject(o)
+	return NewResourceFromObject(&obj)
+}
+
+func ensureSchema(schema string, class string, object *rpsl.Object) error {
+	object.EnsureClass(class)
+
+	schema = strings.TrimSpace(schema)
+	lines := strings.Split(schema, "\n")
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+
+		if line == "" {
+			return fmt.Errorf("empty line in schema")
+		}
+
+		isMandatory := strings.Contains(line, " mandatory ")
+		isOptional := strings.Contains(line, " optional ")
+		isGenerated := strings.Contains(line, " generated ")
+		isSingle := strings.Contains(line, "single")
+		isMultiple := strings.Contains(line, " multiple ")
+
+		parts := strings.SplitN(line, ":", 2)
+		attr := strings.TrimSpace(parts[0])
+
+		var err error
+		if isMandatory && isSingle {
+			err = object.EnsureOne(attr)
+		} else if isMandatory && isMultiple {
+			err = object.EnsureAtLeastOne(attr)
+		} else if (isOptional || isGenerated) && isSingle {
+			err = object.EnsureAtMostOne(attr)
+		}
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

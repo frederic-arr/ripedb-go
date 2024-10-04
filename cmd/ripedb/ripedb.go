@@ -32,7 +32,7 @@ func (c *GetCmd) Run(ctx *Context, client *ripedb.RipeDbClient) error {
 	resource := c.Resource
 	key := c.Key
 
-	resp, err := (*client).Get(resource, key)
+	resp, err := (*client).GetResource(resource, key)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

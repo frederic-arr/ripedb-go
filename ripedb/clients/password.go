@@ -12,7 +12,6 @@ import (
 	"net/url"
 
 	"github.com/frederic-arr/ripedb-go/ripedb/models"
-	"github.com/frederic-arr/ripedb-go/ripedb/resources"
 	"github.com/frederic-arr/rpsl-go"
 )
 
@@ -96,7 +95,7 @@ func (c *RipePasswordClient) request(method string, resource string, key string,
 }
 
 func (c *RipePasswordClient) GetObject(resource string, key string) (*rpsl.Object, error) {
-	res, err := c.Get(resource, key)
+	res, err := c.GetResource(resource, key)
 	if err != nil {
 		return nil, err
 	}
@@ -106,39 +105,12 @@ func (c *RipePasswordClient) GetObject(resource string, key string) (*rpsl.Objec
 		return nil, err
 	}
 
-	return obj.ToRpslObject()
+	return models.ModelObjectToRpslObject(obj)
 }
 
 func (c *RipePasswordClient) CreateObject(resource string, object *rpsl.Object) (*rpsl.Object, error) {
-	obj := models.ToModelObject(object)
-	res, err := c.Post(resource, obj.ToResource())
-	if err != nil {
-		return nil, err
-	}
-
-	rObj, err := res.FindOne()
-	if err != nil {
-		return nil, err
-	}
-
-	return rObj.ToRpslObject()
-}
-func (c *RipePasswordClient) UpdateObject(resource string, key string, object *rpsl.Object) (*rpsl.Object, error) {
-	obj := models.ToModelObject(object)
-	res, err := c.Put(resource, key, obj.ToResource())
-	if err != nil {
-		return nil, err
-	}
-
-	rObj, err := res.FindOne()
-	if err != nil {
-		return nil, err
-	}
-
-	return rObj.ToRpslObject()
-}
-func (c *RipePasswordClient) DeleteObject(resource string, key string) (*rpsl.Object, error) {
-	res, err := c.Delete(resource, key)
+	data := models.NewResourceFromRpslObject(object)
+	res, err := c.PostResource(resource, data)
 	if err != nil {
 		return nil, err
 	}
@@ -148,14 +120,41 @@ func (c *RipePasswordClient) DeleteObject(resource string, key string) (*rpsl.Ob
 		return nil, err
 	}
 
-	return obj.ToRpslObject()
+	return models.ModelObjectToRpslObject(obj)
+}
+func (c *RipePasswordClient) UpdateObject(resource string, key string, object *rpsl.Object) (*rpsl.Object, error) {
+	data := models.NewResourceFromRpslObject(object)
+	res, err := c.PutResource(resource, key, data)
+	if err != nil {
+		return nil, err
+	}
+
+	obj, err := res.FindOne()
+	if err != nil {
+		return nil, err
+	}
+
+	return models.ModelObjectToRpslObject(obj)
+}
+func (c *RipePasswordClient) DeleteObject(resource string, key string) (*rpsl.Object, error) {
+	res, err := c.DeleteResource(resource, key)
+	if err != nil {
+		return nil, err
+	}
+
+	obj, err := res.FindOne()
+	if err != nil {
+		return nil, err
+	}
+
+	return models.ModelObjectToRpslObject(obj)
 }
 
-func (c *RipePasswordClient) Get(resource string, key string) (*models.Resource, error) {
+func (c *RipePasswordClient) GetResource(resource string, key string) (*models.Resource, error) {
 	return c.request("GET", resource, key, nil)
 }
 
-func (c *RipePasswordClient) Post(resource string, data models.Resource) (*models.Resource, error) {
+func (c *RipePasswordClient) PostResource(resource string, data models.Resource) (*models.Resource, error) {
 	body, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
@@ -164,7 +163,7 @@ func (c *RipePasswordClient) Post(resource string, data models.Resource) (*model
 	return c.request("POST", resource, "", bytes.NewReader(body))
 }
 
-func (c *RipePasswordClient) Put(resource string, key string, data models.Resource) (*models.Resource, error) {
+func (c *RipePasswordClient) PutResource(resource string, key string, data models.Resource) (*models.Resource, error) {
 	body, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
@@ -173,177 +172,6 @@ func (c *RipePasswordClient) Put(resource string, key string, data models.Resour
 	return c.request("PUT", resource, key, bytes.NewReader(body))
 }
 
-func (c *RipePasswordClient) Delete(resource string, key string) (*models.Resource, error) {
+func (c *RipePasswordClient) DeleteResource(resource string, key string) (*models.Resource, error) {
 	return c.request("DELETE", resource, key, nil)
-}
-
-func (c *RipePasswordClient) GetAsBlock(key string) (*resources.AsBlockModel, error) {
-	obj, err := findOne(c, "as-block", key)
-	if err != nil {
-		return nil, err
-	}
-
-	return resources.AsBlockFromModel(obj)
-}
-
-func (c *RipePasswordClient) GetAsSet(key string) (*resources.AsSetModel, error) {
-	obj, err := findOne(c, "as-set", key)
-	if err != nil {
-		return nil, err
-	}
-
-	return resources.AsSetFromModel(obj)
-}
-
-func (c *RipePasswordClient) GetAutNum(key string) (*resources.AutNumModel, error) {
-	obj, err := findOne(c, "aut-num", key)
-	if err != nil {
-		return nil, err
-	}
-
-	return resources.AutNumFromModel(obj)
-}
-
-func (c *RipePasswordClient) GetDomain(key string) (*resources.DomainModel, error) {
-	obj, err := findOne(c, "domain", key)
-	if err != nil {
-		return nil, err
-	}
-
-	return resources.DomainFromModel(obj)
-}
-
-func (c *RipePasswordClient) GetFilterSet(key string) (*resources.FilterSetModel, error) {
-	obj, err := findOne(c, "filter-set", key)
-	if err != nil {
-		return nil, err
-	}
-
-	return resources.FilterSetFromModel(obj)
-}
-
-func (c *RipePasswordClient) GetInetRtr(key string) (*resources.InetRtrModel, error) {
-	obj, err := findOne(c, "inet-rtr", key)
-	if err != nil {
-		return nil, err
-	}
-
-	return resources.InetRtrFromModel(obj)
-}
-
-func (c *RipePasswordClient) GetInet6Num(key string) (*resources.Inet6NumModel, error) {
-	obj, err := findOne(c, "inet6num", key)
-	if err != nil {
-		return nil, err
-	}
-
-	return resources.Inet6NumFromModel(obj)
-}
-
-func (c *RipePasswordClient) GetInetNum(key string) (*resources.InetNumModel, error) {
-	obj, err := findOne(c, "inetnum", key)
-	if err != nil {
-		return nil, err
-	}
-
-	return resources.InetNumFromModel(obj)
-}
-
-func (c *RipePasswordClient) GetIrt(key string) (*resources.IrtModel, error) {
-	obj, err := findOne(c, "irt", key)
-	if err != nil {
-		return nil, err
-	}
-
-	return resources.IrtFromModel(obj)
-}
-
-func (c *RipePasswordClient) GetKeyCert(key string) (*resources.KeyCertModel, error) {
-	obj, err := findOne(c, "key-cert", key)
-	if err != nil {
-		return nil, err
-	}
-
-	return resources.KeyCertFromModel(obj)
-}
-
-func (c *RipePasswordClient) GetMntner(key string) (*resources.MntnerModel, error) {
-	obj, err := findOne(c, "mntner", key)
-	if err != nil {
-		return nil, err
-	}
-
-	return resources.MntnerFromModel(obj)
-}
-
-func (c *RipePasswordClient) GetOrganisation(key string) (*resources.OrganisationModel, error) {
-	obj, err := findOne(c, "organisation", key)
-	if err != nil {
-		return nil, err
-	}
-
-	return resources.OrganisationFromModel(obj)
-}
-
-func (c *RipePasswordClient) GetPeeringSet(key string) (*resources.PeeringSetModel, error) {
-	obj, err := findOne(c, "peering-set", key)
-	if err != nil {
-		return nil, err
-	}
-
-	return resources.PeeringSetFromModel(obj)
-}
-
-func (c *RipePasswordClient) GetPerson(key string) (*resources.PersonModel, error) {
-	obj, err := findOne(c, "person", key)
-	if err != nil {
-		return nil, err
-	}
-
-	return resources.PersonFromModel(obj)
-}
-
-func (c *RipePasswordClient) GetRole(key string) (*resources.RoleModel, error) {
-	obj, err := findOne(c, "role", key)
-	if err != nil {
-		return nil, err
-	}
-
-	return resources.RoleFromModel(obj)
-}
-
-func (c *RipePasswordClient) GetRoute(key string) (*resources.RouteModel, error) {
-	obj, err := findOne(c, "route", key)
-	if err != nil {
-		return nil, err
-	}
-
-	return resources.RouteFromModel(obj)
-}
-
-func (c *RipePasswordClient) GetRouteSet(key string) (*resources.RouteSetModel, error) {
-	obj, err := findOne(c, "route-set", key)
-	if err != nil {
-		return nil, err
-	}
-
-	return resources.RouteSetFromModel(obj)
-}
-
-func (c *RipePasswordClient) GetRoute6(key string) (*resources.Route6Model, error) {
-	obj, err := findOne(c, "route6", key)
-	if err != nil {
-		return nil, err
-	}
-
-	return resources.Route6FromModel(obj)
-}
-
-func (c *RipePasswordClient) GetRtrSet(key string) (*resources.RtrSetModel, error) {
-	obj, err := findOne(c, "rtr-set", key)
-	if err != nil {
-		return nil, err
-	}
-
-	return resources.RtrSetFromModel(obj)
 }
