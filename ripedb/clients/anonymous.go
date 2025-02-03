@@ -14,43 +14,44 @@ import (
 )
 
 type RipeAnonymousClient struct {
-	Endpoint string
-	Format   bool
-	Filter   bool
-	Source   string
+	Opts RipeClientOptions
 }
 
 func (c *RipeAnonymousClient) SetEndpoint(endpoint string) {
-	c.Endpoint = endpoint
+	c.Opts.Endpoint = endpoint
 }
 
 func (c *RipeAnonymousClient) SetSource(source string) {
-	c.Source = source
+	c.Opts.Source = source
 }
 
 func (c *RipeAnonymousClient) SetFilter(filter bool) {
-	c.Filter = filter
+	c.Opts.Filter = filter
 }
 
 func (c *RipeAnonymousClient) SetFormat(format bool) {
-	c.Format = format
+	c.Opts.Format = format
+}
+
+func (c *RipeAnonymousClient) SetNoError(noError bool) {
+	c.Opts.NoError = noError
 }
 
 func (c *RipeAnonymousClient) request(method string, resource string, key string, body io.Reader) (*models.Resource, error) {
 	httpClient := &http.Client{}
-	req, err := http.NewRequest(method, fmt.Sprintf("%s/%s/%s/%s", c.Endpoint, c.Source, resource, url.PathEscape(key)), body)
+	req, err := http.NewRequest(method, fmt.Sprintf("%s/%s/%s/%s", c.Opts.Endpoint, c.Opts.Source, resource, url.PathEscape(key)), body)
 	if err != nil {
 		return nil, err
 	}
 
 	req.Header.Add("Accept", "application/json")
-	if !c.Format {
+	if !c.Opts.Format {
 		q := req.URL.Query()
 		q.Add("unformatted", "")
 		req.URL.RawQuery = q.Encode()
 	}
 
-	if !c.Filter {
+	if !c.Opts.Filter {
 		q := req.URL.Query()
 		q.Add("unfiltered", "")
 		req.URL.RawQuery = q.Encode()
@@ -63,7 +64,7 @@ func (c *RipeAnonymousClient) request(method string, resource string, key string
 
 	defer resp.Body.Close()
 
-	res, err := parseResponse(*resp)
+	res, err := parseResponse(*resp, c.Opts.NoError)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing response from URL `%s`: %w", req.URL.String(), err)
 	}

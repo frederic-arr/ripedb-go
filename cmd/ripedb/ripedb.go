@@ -5,10 +5,13 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/alecthomas/kong"
 	"github.com/frederic-arr/ripedb-go/ripedb"
+	"github.com/frederic-arr/ripedb-go/ripedb/models"
+	"github.com/frederic-arr/rpsl-go"
 )
 
 type Context struct {
@@ -16,10 +19,13 @@ type Context struct {
 }
 
 var CLI struct {
-	Debug    bool    `help:"Enable debug mode."`
-	User     *string `env:"RIPEDB_USER" help:"The user to use for authentication."`
-	Password *string `env:"RIPEDB_PASSWORD" help:"The password to use for authentication."`
-	Get      GetCmd  `cmd:"" help:"Fetch a resource from the RIPE database."`
+	Debug    bool      `help:"Enable debug mode."`
+	User     *string   `env:"RIPEDB_USER" help:"The user to use for authentication."`
+	Password *string   `env:"RIPEDB_PASSWORD" help:"The password to use for authentication."`
+	Endpoint *string   `env:"RIPEDB_ENDPOINT" help:"The endpoint of the database."`
+	Source   *string   `env:"RIPEDB_SOURCE" help:"The source of the database."`
+	Get      GetCmd    `cmd:"" help:"Fetch a resource from the RIPE database."`
+	Upsert   UpsertCmd `cmd:"" help:"Create or update a resource from the RIPE database."`
 }
 
 type GetCmd struct {
@@ -28,16 +34,14 @@ type GetCmd struct {
 	Format   bool   `default:"true" negatable:"" short:"f" help:"Format the output or return the resource in its original formatting (including spaces, end-of-lines)."`
 }
 
-func (c *GetCmd) Run(ctx *Context, client *ripedb.RipeDbClient) error {
-	resource := c.Resource
-	key := c.Key
+type UpsertCmd struct {
+	Resource string `arg:"" name:"resource" help:"The resource of the resource to update."`
+	Key      string `arg:"" name:"key" help:"The key of the resource to update."`
+	Input    string `arg:"" name:"input" help:"RPSL object file with the new resource content." type:"path"`
+	Format   bool   `default:"true" negatable:"" short:"f" help:"Format the output or return the resource in its original formatting (including spaces, end-of-lines)."`
+}
 
-	resp, err := (*client).GetResource(resource, key)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
+func formatResponse(resp *models.Resource) {
 	header := "# This is the RIPE Database search service.\n# The objects are in RPSL (RFC 2622) format.\n# The RIPE Database is subject to Terms and Conditions."
 	fmt.Printf("\033[90m%s\033[0m\n", header)
 
@@ -74,7 +78,59 @@ func (c *GetCmd) Run(ctx *Context, client *ripedb.RipeDbClient) error {
 
 		fmt.Println("")
 	}
+}
 
+func (c *UpsertCmd) Run(ctx *Context, client *ripedb.RipeDbClient) error {
+	resource := c.Resource
+	key := c.Key
+	input := c.Input
+
+	file, err := os.Open(input)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	raw := []byte{}
+	buf := make([]byte, 1024)
+	for {
+		n, err := file.Read(buf)
+		if n == 0 {
+			break
+		}
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		raw = append(raw, buf[:n]...)
+	}
+
+	obj, err := rpsl.Parse(string(raw))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	data := models.NewResourceFromRpslObject(obj)
+	resp, err := (*client).PutResource(resource, key, data)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	formatResponse(resp)
+	return nil
+}
+
+func (c *GetCmd) Run(ctx *Context, client *ripedb.RipeDbClient) error {
+	resource := c.Resource
+	key := c.Key
+
+	resp, err := (*client).GetResource(resource, key)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	formatResponse(resp)
 	return nil
 }
 
@@ -83,9 +139,17 @@ func main() {
 
 	var client ripedb.RipeDbClient
 	if CLI.Password != nil {
-		client = ripedb.NewRipePasswordClient(CLI.User, *CLI.Password)
+		client = ripedb.NewRipePasswordClient(CLI.User, *CLI.Password, nil)
 	} else {
-		client = ripedb.NewRipeAnonymousClient()
+		client = ripedb.NewRipeAnonymousClient(nil)
+	}
+
+	if CLI.Endpoint != nil {
+		client.SetEndpoint(*CLI.Endpoint)
+	}
+
+	if CLI.Source != nil {
+		client.SetSource(*CLI.Source)
 	}
 
 	err := ctx.Run(&Context{Debug: CLI.Debug}, &client)

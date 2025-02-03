@@ -20,22 +20,53 @@ const (
 	RIPE_PROD_ENDPOINT_MTLS     = "https://rest-cert.db.ripe.net"
 )
 
-func NewRipeAnonymousClient() *RipeAnonymousClient {
-	return &RipeAnonymousClient{
+func partialToOptions(input *clients.RipeClientOptionsPartial) clients.RipeClientOptions {
+	opts := clients.RipeClientOptions{
 		Endpoint: RIPE_PROD_ENDPOINT,
 		Filter:   false,
 		Format:   true,
+		NoError:  false,
 		Source:   "ripe",
+	}
+
+	partial := clients.RipeClientOptionsPartial{}
+	if input != nil {
+		partial = *input
+	}
+
+	if partial.Endpoint != nil {
+		opts.Endpoint = *partial.Endpoint
+	}
+
+	if partial.Filter != nil {
+		opts.Filter = *partial.Filter
+	}
+
+	if partial.Format != nil {
+		opts.Format = *partial.Format
+	}
+
+	if partial.NoError != nil {
+		opts.NoError = *partial.NoError
+	}
+
+	if partial.Source != nil {
+		opts.Source = *partial.Source
+	}
+
+	return opts
+}
+
+func NewRipeAnonymousClient(opts *clients.RipeClientOptionsPartial) *RipeAnonymousClient {
+	return &RipeAnonymousClient{
+		Opts: partialToOptions(opts),
 	}
 }
 
-func NewRipePasswordClient(user *string, password string) *clients.RipePasswordClient {
+func NewRipePasswordClient(user *string, password string, opts *clients.RipeClientOptionsPartial) *clients.RipePasswordClient {
 	return &clients.RipePasswordClient{
-		Endpoint: RIPE_PROD_ENDPOINT,
-		Filter:   false,
-		Format:   true,
+		Opts:     partialToOptions(opts),
 		User:     user,
 		Password: password,
-		Source:   "ripe",
 	}
 }

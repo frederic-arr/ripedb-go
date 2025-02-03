@@ -16,37 +16,38 @@ import (
 )
 
 type RipePasswordClient struct {
-	Endpoint string
-	Filter   bool
-	Format   bool
+	Opts     RipeClientOptions
 	User     *string
 	Password string
-	Source   string
 }
 
 func (c *RipePasswordClient) SetEndpoint(endpoint string) {
-	c.Endpoint = endpoint
+	c.Opts.Endpoint = endpoint
 }
 
 func (c *RipePasswordClient) SetSource(source string) {
-	c.Source = source
+	c.Opts.Source = source
 }
 
 func (c *RipePasswordClient) SetFilter(filter bool) {
-	c.Filter = filter
+	c.Opts.Filter = filter
 }
 
 func (c *RipePasswordClient) SetFormat(format bool) {
-	c.Format = format
+	c.Opts.Format = format
+}
+
+func (c *RipePasswordClient) SetNoError(noError bool) {
+	c.Opts.NoError = noError
 }
 
 func (c *RipePasswordClient) request(method string, resource string, key string, body io.Reader) (*models.Resource, error) {
 	httpClient := &http.Client{}
 	var path string
 	if key == "" {
-		path = fmt.Sprintf("%s/%s/%s", c.Endpoint, c.Source, resource)
+		path = fmt.Sprintf("%s/%s/%s", c.Opts.Endpoint, c.Opts.Source, resource)
 	} else {
-		path = fmt.Sprintf("%s/%s/%s/%s", c.Endpoint, c.Source, resource, url.PathEscape(key))
+		path = fmt.Sprintf("%s/%s/%s/%s", c.Opts.Endpoint, c.Opts.Source, resource, url.PathEscape(key))
 	}
 	req, err := http.NewRequest(method, path, body)
 	if err != nil {
@@ -58,13 +59,6 @@ func (c *RipePasswordClient) request(method string, resource string, key string,
 		req.Header.Add("Content-Type", "application/json")
 	}
 
-	// print body
-	if body != nil {
-		buf := new(bytes.Buffer)
-		buf.ReadFrom(body)
-		fmt.Println(buf.String())
-	}
-
 	if c.User != nil {
 		req.SetBasicAuth(*c.User, c.Password)
 	} else {
@@ -73,13 +67,13 @@ func (c *RipePasswordClient) request(method string, resource string, key string,
 		req.URL.RawQuery = q.Encode()
 	}
 
-	if !c.Format {
+	if !c.Opts.Format {
 		q := req.URL.Query()
 		q.Add("unformatted", "")
 		req.URL.RawQuery = q.Encode()
 	}
 
-	if !c.Filter {
+	if !c.Opts.Filter {
 		q := req.URL.Query()
 		q.Add("unfiltered", "")
 		req.URL.RawQuery = q.Encode()
@@ -91,7 +85,7 @@ func (c *RipePasswordClient) request(method string, resource string, key string,
 	}
 
 	defer resp.Body.Close()
-	return parseResponse(*resp)
+	return parseResponse(*resp, c.Opts.NoError)
 }
 
 func (c *RipePasswordClient) GetObject(resource string, key string) (*rpsl.Object, error) {
@@ -155,6 +149,11 @@ func (c *RipePasswordClient) GetResource(resource string, key string) (*models.R
 }
 
 func (c *RipePasswordClient) PostResource(resource string, data models.Resource) (*models.Resource, error) {
+	err := ValidateResource(resource, data)
+	if err != nil {
+		return nil, err
+	}
+
 	body, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
@@ -164,6 +163,11 @@ func (c *RipePasswordClient) PostResource(resource string, data models.Resource)
 }
 
 func (c *RipePasswordClient) PutResource(resource string, key string, data models.Resource) (*models.Resource, error) {
+	err := ValidateResource(resource, data)
+	if err != nil {
+		return nil, err
+	}
+
 	body, err := json.Marshal(data)
 	if err != nil {
 		return nil, err

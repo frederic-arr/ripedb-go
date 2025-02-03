@@ -215,6 +215,7 @@ func ensureSchema(schema string, class string, object *rpsl.Object) error {
 
 	schema = strings.TrimSpace(schema)
 	lines := strings.Split(schema, "\n")
+	keys := make(map[string]bool)
 	for _, line := range lines {
 		line = strings.TrimSpace(line)
 
@@ -240,8 +241,16 @@ func ensureSchema(schema string, class string, object *rpsl.Object) error {
 			err = object.EnsureAtMostOne(attr)
 		}
 
+		keys[attr] = true
+
 		if err != nil {
 			return err
+		}
+	}
+
+	for _, attr := range object.Attributes {
+		if _, ok := keys[attr.Name]; !ok {
+			return fmt.Errorf("attribute %s not found in schema", attr.Name)
 		}
 	}
 
