@@ -211,7 +211,10 @@ func NewResourceFromRpslObject(o *rpsl.Object) Resource {
 }
 
 func ensureSchema(schema string, class string, object *rpsl.Object) error {
-	object.EnsureClass(class)
+	err := object.EnsureClass(class)
+	if err != nil {
+		return err
+	}
 
 	schema = strings.TrimSpace(schema)
 	lines := strings.Split(schema, "\n")
