@@ -22,6 +22,8 @@ var CLI struct {
 	Debug    bool      `help:"Enable debug mode."`
 	User     *string   `env:"RIPEDB_USER" help:"The user to use for authentication."`
 	Password *string   `env:"RIPEDB_PASSWORD" help:"The password to use for authentication."`
+	Key      *string   `env:"RIPEDB_KEYFILE" help:"The key to use for authentication."`
+	Cert     *string   `env:"RIPEDB_CERTFILE" help:"The certificate to use for authentication."`
 	Endpoint *string   `env:"RIPEDB_ENDPOINT" help:"The endpoint of the database."`
 	Source   *string   `env:"RIPEDB_SOURCE" help:"The source of the database."`
 	Get      GetCmd    `cmd:"" help:"Fetch a resource from the RIPE database."`
@@ -158,8 +160,16 @@ func main() {
 	ctx := kong.Parse(&CLI)
 
 	var client ripedb.RipeDbClient
-	if CLI.Password != nil {
+	if CLI.Password != nil && *CLI.Password != "" {
+		fmt.Println("CLI.Password: ", *CLI.Password)
 		client = ripedb.NewRipePasswordClient(CLI.User, *CLI.Password, nil)
+	} else if CLI.Key != nil || CLI.Cert != nil {
+		fmt.Println("CLI.Key: ", *CLI.Key)
+		if CLI.Key == nil || CLI.Cert == nil {
+			log.Fatal("Both key and cert must be provided.")
+		}
+
+		client = ripedb.NewRipeX509Client(*CLI.Key, *CLI.Cert, nil)
 	} else {
 		client = ripedb.NewRipeAnonymousClient(nil)
 	}

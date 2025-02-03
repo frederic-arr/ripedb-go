@@ -8,7 +8,7 @@ This is a Go client for the RIPE Database RESTful Web Service API. It is a simpl
 - Authentification schemes
   - Anonymous
   - Password
-  - (*Soon*) X.509
+  - [X.509 Client Certificate](https://docs.db.ripe.net/Appendices/Appendix-I--Client-Certificate-Authentication/)
 
 ## Library
 ### Installation
@@ -54,9 +54,42 @@ go install github.com/frederic-arr/ripedb-go/cmd/ripedb@latest
 ripedb <resource> <key>
 ```
 
+### Authentication
+
+The CLI supports the following authentication schemes:
+
+- Anonymous
+- Password
+
+#### Anonymous
+
+The anonymous authentication scheme is the default one. It does not require any credentials.
+
+#### Password
+
+The password authentication scheme requires a username and a password. The username is the RIPE Database user handle.
+
+```bash
+$ ripedb --user <username> --password <password> get organisation ORG-CEOf1-RIPE
+```
+
+Alternatively, you can set the `RIPEDB_USER` and `RIPEDB_PASSWORD` environment variables.
+
+#### X.509 Client Certificate
+
+The X.509 client certificate authentication scheme requires a client certificate and a private key.
+
+```bash
+$ ripedb --cert <cert> --key <key> get organisation ORG-CEOf1-RIPE
+```
+
+Alternatively, you can set the `RIPEDB_CERTFILE` and `RIPEDB_KEYFILE` environment variables.
+
+Please refer to the [Appendix I - Client Certificate Authentication](https://docs.db.ripe.net/Appendices/Appendix-I--Client-Certificate-Authentication/) for more information on how to generate a client certificate.
+
 ### Example
 ```bash
-$ ripedb organisation ORG-CEOf1-RIPE
+$ ripedb get organisation ORG-CEOf1-RIPE
 ```
 
 ![Terminal screenshot of the output](./.github/assets/cern-dark.png#gh-dark-mode-only)

@@ -20,9 +20,9 @@ const (
 	RIPE_PROD_ENDPOINT_MTLS     = "https://rest-cert.db.ripe.net"
 )
 
-func partialToOptions(input *clients.RipeClientOptionsPartial) clients.RipeClientOptions {
+func partialToOptions(input *clients.RipeClientOptionsPartial, defaultEndpoint string) clients.RipeClientOptions {
 	opts := clients.RipeClientOptions{
-		Endpoint: RIPE_PROD_ENDPOINT,
+		Endpoint: defaultEndpoint,
 		Filter:   false,
 		Format:   true,
 		NoError:  false,
@@ -59,14 +59,22 @@ func partialToOptions(input *clients.RipeClientOptionsPartial) clients.RipeClien
 
 func NewRipeAnonymousClient(opts *clients.RipeClientOptionsPartial) *RipeAnonymousClient {
 	return &RipeAnonymousClient{
-		Opts: partialToOptions(opts),
+		Opts: partialToOptions(opts, RIPE_PROD_ENDPOINT),
 	}
 }
 
 func NewRipePasswordClient(user *string, password string, opts *clients.RipeClientOptionsPartial) *clients.RipePasswordClient {
 	return &clients.RipePasswordClient{
-		Opts:     partialToOptions(opts),
+		Opts:     partialToOptions(opts, RIPE_PROD_ENDPOINT),
 		User:     user,
 		Password: password,
+	}
+}
+
+func NewRipeX509Client(keyFile string, certFile string, opts *clients.RipeClientOptionsPartial) *clients.RipeX509Client {
+	return &clients.RipeX509Client{
+		Opts: partialToOptions(opts, RIPE_PROD_ENDPOINT_MTLS),
+		Key:  keyFile,
+		Cert: certFile,
 	}
 }
