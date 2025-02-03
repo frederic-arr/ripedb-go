@@ -7,7 +7,7 @@ This is a Go client for the RIPE Database RESTful Web Service API. It is a simpl
 - Create/Update/Delete operations on single resources
 - Authentification schemes
   - Anonymous
-  - Password
+  - Password & [API Key](https://docs.db.ripe.net/23.Appendices/11-Appendix-K--API-Keys.html)
   - [X.509 Client Certificate](https://docs.db.ripe.net/Appendices/Appendix-I--Client-Certificate-Authentication/)
 
 ## Library
@@ -65,7 +65,7 @@ The CLI supports the following authentication schemes:
 
 The anonymous authentication scheme is the default one. It does not require any credentials.
 
-#### Password
+#### Password & API Key
 
 The password authentication scheme requires a username and a password. The username is the RIPE Database user handle.
 
@@ -74,6 +74,10 @@ $ ripedb --user <username> --password <password> get organisation ORG-CEOf1-RIPE
 ```
 
 Alternatively, you can set the `RIPEDB_USER` and `RIPEDB_PASSWORD` environment variables.
+
+> [!CAUTION]
+> It is possible to provider the password without the username, but it is not recommended.
+> This will pass the password as a query parameter in the URL (instead of the Authorization header).
 
 #### X.509 Client Certificate
 
