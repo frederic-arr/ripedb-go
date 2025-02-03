@@ -26,6 +26,7 @@ var CLI struct {
 	Source   *string   `env:"RIPEDB_SOURCE" help:"The source of the database."`
 	Get      GetCmd    `cmd:"" help:"Fetch a resource from the RIPE database."`
 	Upsert   UpsertCmd `cmd:"" help:"Create or update a resource from the RIPE database."`
+	Delete   DeleteCmd `cmd:"" help:"Delete a resource from the RIPE database."`
 }
 
 type GetCmd struct {
@@ -38,6 +39,12 @@ type UpsertCmd struct {
 	Resource string `arg:"" name:"resource" help:"The resource of the resource to update."`
 	Key      string `arg:"" name:"key" help:"The key of the resource to update."`
 	Input    string `arg:"" name:"input" help:"RPSL object file with the new resource content." type:"path"`
+	Format   bool   `default:"true" negatable:"" short:"f" help:"Format the output or return the resource in its original formatting (including spaces, end-of-lines)."`
+}
+
+type DeleteCmd struct {
+	Resource string `arg:"" name:"resource" help:"The resource of the resource to delete."`
+	Key      string `arg:"" name:"key" help:"The key of the resource to delete."`
 	Format   bool   `default:"true" negatable:"" short:"f" help:"Format the output or return the resource in its original formatting (including spaces, end-of-lines)."`
 }
 
@@ -126,6 +133,19 @@ func (c *GetCmd) Run(ctx *Context, client *ripedb.RipeDbClient) error {
 	key := c.Key
 
 	resp, err := (*client).GetResource(resource, key)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	formatResponse(resp)
+	return nil
+}
+
+func (c *DeleteCmd) Run(ctx *Context, client *ripedb.RipeDbClient) error {
+	resource := c.Resource
+	key := c.Key
+
+	resp, err := (*client).DeleteResource(resource, key)
 	if err != nil {
 		log.Fatal(err)
 	}
