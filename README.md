@@ -1,4 +1,5 @@
 # RIPE DB Go Client
+
 This is a Go client for the RIPE Database RESTful Web Service API. It is a simple wrapper around the API, providing a more convenient way to interact with the RIPE Database.
 
 ## Features
@@ -11,7 +12,9 @@ This is a Go client for the RIPE Database RESTful Web Service API. It is a simpl
   - [X.509 Client Certificate](https://docs.db.ripe.net/Appendices/Appendix-I--Client-Certificate-Authentication/)
 
 ## Library
+
 ### Installation
+
 ```bash
 go get github.com/frederic-arr/ripedb-go/cmd/ripedb@latest
 ```
@@ -44,22 +47,22 @@ func main() {
 
 
 ## CLI
+
 ### Installation
+
 ```bash
 go install github.com/frederic-arr/ripedb-go/cmd/ripedb@latest
 ```
 
 ### Usage
+
 ```bash
-ripedb <resource> <key>
+ripedb get <resource> <key>
+ripedb upsert <resource> <key> <file_path_to_rpsl>
+ripedb delete <resource> <key>
 ```
 
 ### Authentication
-
-The CLI supports the following authentication schemes:
-
-- Anonymous
-- Password
 
 #### Anonymous
 
@@ -92,6 +95,7 @@ Alternatively, you can set the `RIPEDB_CERTFILE` and `RIPEDB_KEYFILE` environmen
 Please refer to the [Appendix I - Client Certificate Authentication](https://docs.db.ripe.net/Appendices/Appendix-I--Client-Certificate-Authentication/) for more information on how to generate a client certificate.
 
 ### Example
+
 ```bash
 $ ripedb get organisation ORG-CEOf1-RIPE
 ```
