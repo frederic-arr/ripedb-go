@@ -41,6 +41,6 @@ func NewPerson(object rpsl.Object) (*Person, error) {
 		return nil, err
 	}
 
-	person := Person{Object: object}
-	return &person, nil
+	obj := Person{Object: object}
+	return &obj, nil
 }

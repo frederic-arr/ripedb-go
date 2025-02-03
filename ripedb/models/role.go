@@ -44,6 +44,6 @@ func NewRole(object rpsl.Object) (*Role, error) {
 		return nil, err
 	}
 
-	role := Role{Object: object}
-	return &role, nil
+	obj := Role{Object: object}
+	return &obj, nil
 }

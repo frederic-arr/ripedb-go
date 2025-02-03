@@ -41,6 +41,6 @@ func NewKeyCert(object rpsl.Object) (*KeyCert, error) {
 		return nil, err
 	}
 
-	keycert := KeyCert{Object: object}
-	return &keycert, nil
+	obj := KeyCert{Object: object}
+	return &obj, nil
 }

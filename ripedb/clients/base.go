@@ -109,6 +109,27 @@ func Validate(resource string, object rpsl.Object) error {
 	case "as-block":
 		_, err := models.NewAsBlock(object)
 		return err
+	case "as-set":
+		_, err := models.NewAsSet(object)
+		return err
+	case "aut-num":
+		_, err := models.NewAutNum(object)
+		return err
+	case "domain":
+		_, err := models.NewDomain(object)
+		return err
+	case "filter-set":
+		_, err := models.NewFilterSet(object)
+		return err
+	case "inet-rtr":
+		_, err := models.NewInetRtr(object)
+		return err
+	case "inet6num":
+		_, err := models.NewInet6Num(object)
+		return err
+	case "inetnum":
+		_, err := models.NewInetNum(object)
+		return err
 	case "irt":
 		_, err := models.NewIrt(object)
 		return err
@@ -121,11 +142,26 @@ func Validate(resource string, object rpsl.Object) error {
 	case "organisation":
 		_, err := models.NewOrganisation(object)
 		return err
+	case "peering-set":
+		_, err := models.NewPeeringSet(object)
+		return err
 	case "person":
 		_, err := models.NewPerson(object)
 		return err
 	case "role":
 		_, err := models.NewRole(object)
+		return err
+	case "route-set":
+		_, err := models.NewRouteSet(object)
+		return err
+	case "route":
+		_, err := models.NewRoute(object)
+		return err
+	case "route6":
+		_, err := models.NewRoute6(object)
+		return err
+	case "rtr-set":
+		_, err := models.NewRtrSet(object)
 		return err
 	}
 

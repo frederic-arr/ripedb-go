@@ -46,6 +46,6 @@ func NewIrt(object rpsl.Object) (*Irt, error) {
 		return nil, err
 	}
 
-	keycert := Irt{Object: object}
-	return &keycert, nil
+	obj := Irt{Object: object}
+	return &obj, nil
 }

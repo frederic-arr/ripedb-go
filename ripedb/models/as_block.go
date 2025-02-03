@@ -37,6 +37,6 @@ func NewAsBlock(object rpsl.Object) (*AsBlock, error) {
 		return nil, err
 	}
 
-	keycert := AsBlock{Object: object}
-	return &keycert, nil
+	obj := AsBlock{Object: object}
+	return &obj, nil
 }

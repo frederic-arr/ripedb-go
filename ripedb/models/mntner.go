@@ -42,6 +42,6 @@ func NewMntner(object rpsl.Object) (*Mntner, error) {
 		return nil, err
 	}
 
-	mntner := Mntner{Object: object}
-	return &mntner, nil
+	obj := Mntner{Object: object}
+	return &obj, nil
 }

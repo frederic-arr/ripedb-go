@@ -50,6 +50,6 @@ func NewOrganisation(object rpsl.Object) (*Organisation, error) {
 		return nil, err
 	}
 
-	organisation := Organisation{Object: object}
-	return &organisation, nil
+	obj := Organisation{Object: object}
+	return &obj, nil
 }
