@@ -12,7 +12,7 @@ type Model interface {
 	Validate() error
 }
 
-func ObjectToModelUnchecked(resource string, object rpsl.Object) (*Model, error) {
+func ObjectToModelUnchecked(resource string, object rpsl.Object) Model {
 	var m Model
 	switch resource {
 	case "as-block":
@@ -53,20 +53,15 @@ func ObjectToModelUnchecked(resource string, object rpsl.Object) (*Model, error)
 		m = NewRoute6Unchecked(object)
 	case "rtr-set":
 		m = NewRtrSetUnchecked(object)
-	default:
-		return nil, fmt.Errorf("unknown resource type")
 	}
 
-	return &m, nil
+	return m
 }
 
-func ObjectToModel(resource string, object rpsl.Object) (*Model, error) {
-	m, err := ObjectToModelUnchecked(resource, object)
-	if err != nil {
-		return nil, err
-	}
+func ObjectToModel(resource string, object rpsl.Object) (Model, error) {
+	m := ObjectToModelUnchecked(resource, object)
 
-	err = (*m).Validate()
+	err := m.Validate()
 	if err != nil {
 		return nil, err
 	}
