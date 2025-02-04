@@ -11,11 +11,11 @@ type Person struct {
 	Object rpsl.Object
 }
 
-func (o *Person) Class() string {
+func (o Person) Class() string {
 	return "person"
 }
 
-func (o *Person) Key() string {
+func (o Person) Key() string {
 	return *o.Object.GetFirst("nic-hdl")
 }
 

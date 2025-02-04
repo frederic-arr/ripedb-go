@@ -11,11 +11,11 @@ type RtrSet struct {
 	Object rpsl.Object
 }
 
-func (o *RtrSet) Class() string {
+func (o RtrSet) Class() string {
 	return "rtr-set"
 }
 
-func (o *RtrSet) Key() string {
+func (o RtrSet) Key() string {
 	return *o.Object.GetFirst("rtr-set")
 }
 

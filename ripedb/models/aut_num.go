@@ -11,11 +11,11 @@ type AutNum struct {
 	Object rpsl.Object
 }
 
-func (o *AutNum) Class() string {
+func (o AutNum) Class() string {
 	return "aut-num"
 }
 
-func (o *AutNum) Key() string {
+func (o AutNum) Key() string {
 	return *o.Object.GetFirst("aut-num")
 }
 

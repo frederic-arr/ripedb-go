@@ -11,11 +11,11 @@ type Organisation struct {
 	Object rpsl.Object
 }
 
-func (o *Organisation) Class() string {
+func (o Organisation) Class() string {
 	return "organisation"
 }
 
-func (o *Organisation) Key() string {
+func (o Organisation) Key() string {
 	return *o.Object.GetFirst("organisation")
 }
 

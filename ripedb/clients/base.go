@@ -101,69 +101,70 @@ func ValidateResource(resource string, data models.Resource) error {
 		return err
 	}
 
-	return Validate(resource, *obj)
+	_, err = Validate(resource, *obj)
+	return err
 }
 
-func Validate(resource string, object rpsl.Object) error {
+func Validate(resource string, object rpsl.Object) (models.Model, error) {
 	switch resource {
 	case "as-block":
-		_, err := models.NewAsBlock(object)
-		return err
+		m, err := models.NewAsBlock(object)
+		return m, err
 	case "as-set":
-		_, err := models.NewAsSet(object)
-		return err
+		m, err := models.NewAsSet(object)
+		return m, err
 	case "aut-num":
-		_, err := models.NewAutNum(object)
-		return err
+		m, err := models.NewAutNum(object)
+		return m, err
 	case "domain":
-		_, err := models.NewDomain(object)
-		return err
+		m, err := models.NewDomain(object)
+		return m, err
 	case "filter-set":
-		_, err := models.NewFilterSet(object)
-		return err
+		m, err := models.NewFilterSet(object)
+		return m, err
 	case "inet-rtr":
-		_, err := models.NewInetRtr(object)
-		return err
+		m, err := models.NewInetRtr(object)
+		return m, err
 	case "inet6num":
-		_, err := models.NewInet6Num(object)
-		return err
+		m, err := models.NewInet6Num(object)
+		return m, err
 	case "inetnum":
-		_, err := models.NewInetNum(object)
-		return err
+		m, err := models.NewInetNum(object)
+		return m, err
 	case "irt":
-		_, err := models.NewIrt(object)
-		return err
+		m, err := models.NewIrt(object)
+		return m, err
 	case "key-cert":
-		_, err := models.NewKeyCert(object)
-		return err
+		m, err := models.NewKeyCert(object)
+		return m, err
 	case "mntner":
-		_, err := models.NewMntner(object)
-		return err
+		m, err := models.NewMntner(object)
+		return m, err
 	case "organisation":
-		_, err := models.NewOrganisation(object)
-		return err
+		m, err := models.NewOrganisation(object)
+		return m, err
 	case "peering-set":
-		_, err := models.NewPeeringSet(object)
-		return err
+		m, err := models.NewPeeringSet(object)
+		return m, err
 	case "person":
-		_, err := models.NewPerson(object)
-		return err
+		m, err := models.NewPerson(object)
+		return m, err
 	case "role":
-		_, err := models.NewRole(object)
-		return err
+		m, err := models.NewRole(object)
+		return m, err
 	case "route-set":
-		_, err := models.NewRouteSet(object)
-		return err
+		m, err := models.NewRouteSet(object)
+		return m, err
 	case "route":
-		_, err := models.NewRoute(object)
-		return err
+		m, err := models.NewRoute(object)
+		return m, err
 	case "route6":
-		_, err := models.NewRoute6(object)
-		return err
+		m, err := models.NewRoute6(object)
+		return m, err
 	case "rtr-set":
-		_, err := models.NewRtrSet(object)
-		return err
+		m, err := models.NewRtrSet(object)
+		return m, err
 	}
 
-	return fmt.Errorf("unknown resource")
+	return nil, fmt.Errorf("unknown resource")
 }

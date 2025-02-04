@@ -11,11 +11,11 @@ type KeyCert struct {
 	Object rpsl.Object
 }
 
-func (o *KeyCert) Class() string {
+func (o KeyCert) Class() string {
 	return "key-cert"
 }
 
-func (o *KeyCert) Key() string {
+func (o KeyCert) Key() string {
 	return *o.Object.GetFirst("key-cert")
 }
 

@@ -11,11 +11,11 @@ type PeeringSet struct {
 	Object rpsl.Object
 }
 
-func (o *PeeringSet) Class() string {
+func (o PeeringSet) Class() string {
 	return "peering-set"
 }
 
-func (o *PeeringSet) Key() string {
+func (o PeeringSet) Key() string {
 	return *o.Object.GetFirst("peering-set")
 }
 

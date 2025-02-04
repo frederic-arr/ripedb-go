@@ -7,15 +7,17 @@ import (
 	"github.com/frederic-arr/rpsl-go"
 )
 
+var _ Model = AsBlock{}
+
 type AsBlock struct {
 	Object rpsl.Object
 }
 
-func (o *AsBlock) Class() string {
+func (o AsBlock) Class() string {
 	return "as-block"
 }
 
-func (o *AsBlock) Key() string {
+func (o AsBlock) Key() string {
 	return *o.Object.GetFirst("as-block")
 }
 

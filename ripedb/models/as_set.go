@@ -11,11 +11,11 @@ type AsSet struct {
 	Object rpsl.Object
 }
 
-func (o *AsSet) Class() string {
+func (o AsSet) Class() string {
 	return "as-set"
 }
 
-func (o *AsSet) Key() string {
+func (o AsSet) Key() string {
 	return *o.Object.GetFirst("as-set")
 }
 

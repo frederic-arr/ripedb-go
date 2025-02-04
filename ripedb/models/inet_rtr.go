@@ -11,11 +11,11 @@ type InetRtr struct {
 	Object rpsl.Object
 }
 
-func (o *InetRtr) Class() string {
+func (o InetRtr) Class() string {
 	return "inet-rtr"
 }
 
-func (o *InetRtr) Key() string {
+func (o InetRtr) Key() string {
 	return *o.Object.GetFirst("inet-rtr")
 }
 

@@ -11,11 +11,11 @@ type Role struct {
 	Object rpsl.Object
 }
 
-func (o *Role) Class() string {
+func (o Role) Class() string {
 	return "role"
 }
 
-func (o *Role) Key() string {
+func (o Role) Key() string {
 	return *o.Object.GetFirst("nic-hdl")
 }
 

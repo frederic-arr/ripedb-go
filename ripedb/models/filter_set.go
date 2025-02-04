@@ -11,11 +11,11 @@ type FilterSet struct {
 	Object rpsl.Object
 }
 
-func (o *FilterSet) Class() string {
+func (o FilterSet) Class() string {
 	return "filter-set"
 }
 
-func (o *FilterSet) Key() string {
+func (o FilterSet) Key() string {
 	return *o.Object.GetFirst("filter-set")
 }
 

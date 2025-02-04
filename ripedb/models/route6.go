@@ -11,11 +11,11 @@ type Route6 struct {
 	Object rpsl.Object
 }
 
-func (o *Route6) Class() string {
+func (o Route6) Class() string {
 	return "route6"
 }
 
-func (o *Route6) Key() string {
+func (o Route6) Key() string {
 	return *o.Object.GetFirst("route6") + *o.Object.GetFirst("origin")
 }
 

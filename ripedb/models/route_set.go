@@ -11,11 +11,11 @@ type RouteSet struct {
 	Object rpsl.Object
 }
 
-func (o *RouteSet) Class() string {
+func (o RouteSet) Class() string {
 	return "route-set"
 }
 
-func (o *RouteSet) Key() string {
+func (o RouteSet) Key() string {
 	return *o.Object.GetFirst("route-set")
 }
 

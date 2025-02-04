@@ -11,11 +11,11 @@ type Domain struct {
 	Object rpsl.Object
 }
 
-func (o *Domain) Class() string {
+func (o Domain) Class() string {
 	return "domain"
 }
 
-func (o *Domain) Key() string {
+func (o Domain) Key() string {
 	return *o.Object.GetFirst("domain")
 }
 

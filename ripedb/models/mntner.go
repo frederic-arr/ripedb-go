@@ -11,11 +11,11 @@ type Mntner struct {
 	Object rpsl.Object
 }
 
-func (o *Mntner) Class() string {
+func (o Mntner) Class() string {
 	return "mntner"
 }
 
-func (o *Mntner) Key() string {
+func (o Mntner) Key() string {
 	return *o.Object.GetFirst("mntner")
 }
 

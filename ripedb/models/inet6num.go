@@ -11,11 +11,11 @@ type Inet6Num struct {
 	Object rpsl.Object
 }
 
-func (o *Inet6Num) Class() string {
+func (o Inet6Num) Class() string {
 	return "inet6num"
 }
 
-func (o *Inet6Num) Key() string {
+func (o Inet6Num) Key() string {
 	return *o.Object.GetFirst("inet6num")
 }
 

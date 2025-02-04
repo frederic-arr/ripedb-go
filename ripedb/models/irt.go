@@ -11,11 +11,11 @@ type Irt struct {
 	Object rpsl.Object
 }
 
-func (o *Irt) Class() string {
+func (o Irt) Class() string {
 	return "irt"
 }
 
-func (o *Irt) Key() string {
+func (o Irt) Key() string {
 	return *o.Object.GetFirst("irt")
 }
 
