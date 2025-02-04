@@ -161,10 +161,8 @@ func main() {
 
 	var client ripedb.RipeDbClient
 	if CLI.Password != nil && *CLI.Password != "" {
-		fmt.Println("CLI.Password: ", *CLI.Password)
 		client = ripedb.NewRipePasswordClient(CLI.User, *CLI.Password, nil)
 	} else if CLI.Key != nil || CLI.Cert != nil {
-		fmt.Println("CLI.Key: ", *CLI.Key)
 		if CLI.Key == nil || CLI.Cert == nil {
 			log.Fatal("Both key and cert must be provided.")
 		}
