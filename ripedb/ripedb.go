@@ -71,10 +71,10 @@ func NewRipePasswordClient(user *string, password string, opts *clients.RipeClie
 	}
 }
 
-func NewRipeX509Client(keyFile string, certFile string, opts *clients.RipeClientOptionsPartial) *clients.RipeX509Client {
+func NewRipeX509Client(cert []byte, key []byte, opts *clients.RipeClientOptionsPartial) *clients.RipeX509Client {
 	return &clients.RipeX509Client{
 		Opts: partialToOptions(opts, RIPE_PROD_ENDPOINT_MTLS),
-		Key:  keyFile,
-		Cert: certFile,
+		Cert: cert,
+		Key:  key,
 	}
 }

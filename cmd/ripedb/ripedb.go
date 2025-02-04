@@ -169,7 +169,17 @@ func main() {
 			log.Fatal("Both key and cert must be provided.")
 		}
 
-		client = ripedb.NewRipeX509Client(*CLI.Key, *CLI.Cert, nil)
+		cert, err := os.ReadFile(*CLI.Cert)
+		if err != nil {
+			log.Fatal("Error reading certificate:", err)
+		}
+
+		key, err := os.ReadFile(*CLI.Key)
+		if err != nil {
+			log.Fatal("Error reading private key:", err)
+		}
+
+		client = ripedb.NewRipeX509Client(cert, key, nil)
 	} else {
 		client = ripedb.NewRipeAnonymousClient(nil)
 	}

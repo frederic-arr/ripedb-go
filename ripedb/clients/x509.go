@@ -18,8 +18,8 @@ import (
 
 type RipeX509Client struct {
 	Opts RipeClientOptions
-	Key  string
-	Cert string
+	Cert []byte
+	Key  []byte
 }
 
 func (c *RipeX509Client) SetEndpoint(endpoint string) {
@@ -43,7 +43,7 @@ func (c *RipeX509Client) SetNoError(noError bool) {
 }
 
 func (c *RipeX509Client) request(method string, resource string, key string, body io.Reader) (*models.Resource, error) {
-	cert, err := tls.LoadX509KeyPair(c.Cert, c.Key)
+	cert, err := tls.X509KeyPair(c.Cert, c.Key)
 	if err != nil {
 		return nil, err
 	}
