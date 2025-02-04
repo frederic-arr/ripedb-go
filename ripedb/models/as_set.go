@@ -39,7 +39,7 @@ func (o AsSet) Validate() error {
         source:         mandatory  single
 	`
 
-	return ensureSchema(schema, "as-block", &o.Object)
+	return ensureSchema(schema, "as-set", &o.Object)
 }
 
 func NewAsSet(object rpsl.Object) (*AsSet, error) {

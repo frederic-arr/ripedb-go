@@ -39,7 +39,7 @@ func (o PeeringSet) Validate() error {
         source:          mandatory  single
 	`
 
-	return ensureSchema(schema, "as-block", &o.Object)
+	return ensureSchema(schema, "peering-set", &o.Object)
 }
 
 func NewPeeringSet(object rpsl.Object) (*PeeringSet, error) {

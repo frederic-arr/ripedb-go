@@ -39,7 +39,7 @@ func (o Person) Validate() error {
 		source:           mandatory  single
 	`
 
-	return ensureSchema(schema, "as-block", &o.Object)
+	return ensureSchema(schema, "person", &o.Object)
 }
 
 func NewPerson(object rpsl.Object) (*Person, error) {

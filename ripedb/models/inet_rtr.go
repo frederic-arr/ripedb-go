@@ -43,7 +43,7 @@ func (o InetRtr) Validate() error {
         source:         mandatory    single
 	`
 
-	return ensureSchema(schema, "as-block", &o.Object)
+	return ensureSchema(schema, "inet-rtr", &o.Object)
 }
 
 func NewInetRtr(object rpsl.Object) (*InetRtr, error) {

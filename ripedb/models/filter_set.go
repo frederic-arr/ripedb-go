@@ -39,7 +39,7 @@ func (o FilterSet) Validate() error {
         source:         mandatory  single
 	`
 
-	return ensureSchema(schema, "as-block", &o.Object)
+	return ensureSchema(schema, "filter-set", &o.Object)
 }
 
 func NewFilterSet(object rpsl.Object) (*FilterSet, error) {

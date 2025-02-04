@@ -49,7 +49,7 @@ func (o Inet6Num) Validate() error {
         source:           mandatory   single
 	`
 
-	return ensureSchema(schema, "as-block", &o.Object)
+	return ensureSchema(schema, "inet6num", &o.Object)
 }
 
 func NewInet6Num(object rpsl.Object) (*Inet6Num, error) {

@@ -48,7 +48,7 @@ func (o Organisation) Validate() error {
         source:           mandatory  single
 	`
 
-	return ensureSchema(schema, "as-block", &o.Object)
+	return ensureSchema(schema, "organisation", &o.Object)
 }
 
 func NewOrganisation(object rpsl.Object) (*Organisation, error) {

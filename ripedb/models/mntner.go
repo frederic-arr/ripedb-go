@@ -40,7 +40,7 @@ func (o Mntner) Validate() error {
         source:         mandatory  single
 	`
 
-	return ensureSchema(schema, "as-block", &o.Object)
+	return ensureSchema(schema, "mntner", &o.Object)
 }
 
 func NewMntner(object rpsl.Object) (*Mntner, error) {

@@ -42,7 +42,7 @@ func (o Role) Validate() error {
         source:         mandatory  single
 	`
 
-	return ensureSchema(schema, "as-block", &o.Object)
+	return ensureSchema(schema, "role", &o.Object)
 }
 
 func NewRole(object rpsl.Object) (*Role, error) {

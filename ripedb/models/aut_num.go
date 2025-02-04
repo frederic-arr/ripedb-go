@@ -49,7 +49,7 @@ func (o AutNum) Validate() error {
         source:          mandatory  single
 	`
 
-	return ensureSchema(schema, "as-block", &o.Object)
+	return ensureSchema(schema, "aut-num", &o.Object)
 }
 
 func NewAutNum(object rpsl.Object) (*AutNum, error) {

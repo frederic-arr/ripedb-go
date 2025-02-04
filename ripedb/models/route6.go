@@ -46,7 +46,7 @@ func (o Route6) Validate() error {
         source:         mandatory  single
 	`
 
-	return ensureSchema(schema, "as-block", &o.Object)
+	return ensureSchema(schema, "route6", &o.Object)
 }
 
 func NewRoute6(object rpsl.Object) (*Route6, error) {

@@ -44,7 +44,7 @@ func (o Irt) Validate() error {
         source:         mandatory  single
 	`
 
-	return ensureSchema(schema, "as-block", &o.Object)
+	return ensureSchema(schema, "irt", &o.Object)
 }
 
 func NewIrt(object rpsl.Object) (*Irt, error) {

@@ -39,7 +39,7 @@ func (o Domain) Validate() error {
         source:           mandatory      single
 	`
 
-	return ensureSchema(schema, "as-block", &o.Object)
+	return ensureSchema(schema, "domain", &o.Object)
 }
 
 func NewDomain(object rpsl.Object) (*Domain, error) {

@@ -40,7 +40,7 @@ func (o RtrSet) Validate() error {
         source:         mandatory  single
 	`
 
-	return ensureSchema(schema, "as-block", &o.Object)
+	return ensureSchema(schema, "rtr-set", &o.Object)
 }
 
 func NewRtrSet(object rpsl.Object) (*RtrSet, error) {

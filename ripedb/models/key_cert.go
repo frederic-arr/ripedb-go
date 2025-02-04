@@ -39,7 +39,7 @@ func (o KeyCert) Validate() error {
         source:         mandatory  single
 	`
 
-	return ensureSchema(schema, "as-block", &o.Object)
+	return ensureSchema(schema, "key-cert", &o.Object)
 }
 
 func NewKeyCert(object rpsl.Object) (*KeyCert, error) {

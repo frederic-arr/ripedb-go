@@ -40,7 +40,7 @@ func (o RouteSet) Validate() error {
         source:         mandatory  single
 	`
 
-	return ensureSchema(schema, "as-block", &o.Object)
+	return ensureSchema(schema, "route-set", &o.Object)
 }
 
 func NewRouteSet(object rpsl.Object) (*RouteSet, error) {
