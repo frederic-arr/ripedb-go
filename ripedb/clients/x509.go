@@ -154,7 +154,7 @@ func (c *RipeX509Client) GetResource(resource string, key string) (*models.Resou
 }
 
 func (c *RipeX509Client) PostResource(resource string, data models.Resource) (*models.Resource, error) {
-	err := ValidateResource(resource, data)
+	err := models.ValidateResource(resource, data)
 	if err != nil {
 		return nil, err
 	}
@@ -168,7 +168,7 @@ func (c *RipeX509Client) PostResource(resource string, data models.Resource) (*m
 }
 
 func (c *RipeX509Client) PutResource(resource string, key string, data models.Resource) (*models.Resource, error) {
-	err := ValidateResource(resource, data)
+	err := models.ValidateResource(resource, data)
 	if err != nil {
 		return nil, err
 	}

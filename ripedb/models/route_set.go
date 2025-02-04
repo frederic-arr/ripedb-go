@@ -7,6 +7,8 @@ import (
 	"github.com/frederic-arr/rpsl-go"
 )
 
+var _ Model = RouteSet{}
+
 type RouteSet struct {
 	Object rpsl.Object
 }
@@ -19,7 +21,7 @@ func (o RouteSet) Key() string {
 	return *o.Object.GetFirst("route-set")
 }
 
-func NewRouteSet(object rpsl.Object) (*RouteSet, error) {
+func (o RouteSet) Validate() error {
 	schema := `
         route-set:      mandatory  single     primary/lookup key
         descr:          optional   multiple
@@ -38,10 +40,18 @@ func NewRouteSet(object rpsl.Object) (*RouteSet, error) {
         source:         mandatory  single
 	`
 
-	if err := ensureSchema(schema, "route-set", &object); err != nil {
+	return ensureSchema(schema, "as-block", &o.Object)
+}
+
+func NewRouteSet(object rpsl.Object) (*RouteSet, error) {
+	obj := NewRouteSetUnchecked(object)
+	if err := obj.Validate(); err != nil {
 		return nil, err
 	}
 
-	obj := RouteSet{Object: object}
 	return &obj, nil
+}
+
+func NewRouteSetUnchecked(object rpsl.Object) RouteSet {
+	return RouteSet{Object: object}
 }

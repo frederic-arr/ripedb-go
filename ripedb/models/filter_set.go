@@ -7,6 +7,8 @@ import (
 	"github.com/frederic-arr/rpsl-go"
 )
 
+var _ Model = FilterSet{}
+
 type FilterSet struct {
 	Object rpsl.Object
 }
@@ -19,7 +21,7 @@ func (o FilterSet) Key() string {
 	return *o.Object.GetFirst("filter-set")
 }
 
-func NewFilterSet(object rpsl.Object) (*FilterSet, error) {
+func (o FilterSet) Validate() error {
 	schema := `
         filter-set:     mandatory  single     primary/lookup key
         descr:          optional   multiple
@@ -37,10 +39,18 @@ func NewFilterSet(object rpsl.Object) (*FilterSet, error) {
         source:         mandatory  single
 	`
 
-	if err := ensureSchema(schema, "filter-set", &object); err != nil {
+	return ensureSchema(schema, "as-block", &o.Object)
+}
+
+func NewFilterSet(object rpsl.Object) (*FilterSet, error) {
+	obj := NewFilterSetUnchecked(object)
+	if err := obj.Validate(); err != nil {
 		return nil, err
 	}
 
-	obj := FilterSet{Object: object}
 	return &obj, nil
+}
+
+func NewFilterSetUnchecked(object rpsl.Object) FilterSet {
+	return FilterSet{Object: object}
 }

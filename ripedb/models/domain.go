@@ -7,6 +7,8 @@ import (
 	"github.com/frederic-arr/rpsl-go"
 )
 
+var _ Model = Domain{}
+
 type Domain struct {
 	Object rpsl.Object
 }
@@ -19,7 +21,7 @@ func (o Domain) Key() string {
 	return *o.Object.GetFirst("domain")
 }
 
-func NewDomain(object rpsl.Object) (*Domain, error) {
+func (o Domain) Validate() error {
 	schema := `
         domain:           mandatory      single       primary/lookup
         descr:            optional       multiple
@@ -37,10 +39,18 @@ func NewDomain(object rpsl.Object) (*Domain, error) {
         source:           mandatory      single
 	`
 
-	if err := ensureSchema(schema, "domain", &object); err != nil {
+	return ensureSchema(schema, "as-block", &o.Object)
+}
+
+func NewDomain(object rpsl.Object) (*Domain, error) {
+	obj := NewDomainUnchecked(object)
+	if err := obj.Validate(); err != nil {
 		return nil, err
 	}
 
-	obj := Domain{Object: object}
 	return &obj, nil
+}
+
+func NewDomainUnchecked(object rpsl.Object) Domain {
+	return Domain{Object: object}
 }

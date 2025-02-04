@@ -7,6 +7,8 @@ import (
 	"github.com/frederic-arr/rpsl-go"
 )
 
+var _ Model = InetRtr{}
+
 type InetRtr struct {
 	Object rpsl.Object
 }
@@ -19,7 +21,7 @@ func (o InetRtr) Key() string {
 	return *o.Object.GetFirst("inet-rtr")
 }
 
-func NewInetRtr(object rpsl.Object) (*InetRtr, error) {
+func (o InetRtr) Validate() error {
 	schema := `
         inet-rtr:       mandatory    single       primary/lookup key
         descr:          optional     multiple
@@ -41,10 +43,18 @@ func NewInetRtr(object rpsl.Object) (*InetRtr, error) {
         source:         mandatory    single
 	`
 
-	if err := ensureSchema(schema, "inet-rtr", &object); err != nil {
+	return ensureSchema(schema, "as-block", &o.Object)
+}
+
+func NewInetRtr(object rpsl.Object) (*InetRtr, error) {
+	obj := NewInetRtrUnchecked(object)
+	if err := obj.Validate(); err != nil {
 		return nil, err
 	}
 
-	obj := InetRtr{Object: object}
 	return &obj, nil
+}
+
+func NewInetRtrUnchecked(object rpsl.Object) InetRtr {
+	return InetRtr{Object: object}
 }

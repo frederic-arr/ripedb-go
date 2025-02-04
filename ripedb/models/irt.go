@@ -7,6 +7,8 @@ import (
 	"github.com/frederic-arr/rpsl-go"
 )
 
+var _ Model = Irt{}
+
 type Irt struct {
 	Object rpsl.Object
 }
@@ -19,7 +21,7 @@ func (o Irt) Key() string {
 	return *o.Object.GetFirst("irt")
 }
 
-func NewIrt(object rpsl.Object) (*Irt, error) {
+func (o Irt) Validate() error {
 	schema := `
         irt:            mandatory  single     primary/lookup key
         address:        mandatory  multiple
@@ -42,10 +44,18 @@ func NewIrt(object rpsl.Object) (*Irt, error) {
         source:         mandatory  single
 	`
 
-	if err := ensureSchema(schema, "irt", &object); err != nil {
+	return ensureSchema(schema, "as-block", &o.Object)
+}
+
+func NewIrt(object rpsl.Object) (*Irt, error) {
+	obj := NewIrtUnchecked(object)
+	if err := obj.Validate(); err != nil {
 		return nil, err
 	}
 
-	obj := Irt{Object: object}
 	return &obj, nil
+}
+
+func NewIrtUnchecked(object rpsl.Object) Irt {
+	return Irt{Object: object}
 }

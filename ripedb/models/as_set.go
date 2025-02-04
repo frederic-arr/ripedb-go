@@ -7,6 +7,8 @@ import (
 	"github.com/frederic-arr/rpsl-go"
 )
 
+var _ Model = AsSet{}
+
 type AsSet struct {
 	Object rpsl.Object
 }
@@ -19,7 +21,7 @@ func (o AsSet) Key() string {
 	return *o.Object.GetFirst("as-set")
 }
 
-func NewAsSet(object rpsl.Object) (*AsSet, error) {
+func (o AsSet) Validate() error {
 	schema := `
         as-set:         mandatory  single     primary/lookup key
         descr:          optional   multiple
@@ -37,10 +39,18 @@ func NewAsSet(object rpsl.Object) (*AsSet, error) {
         source:         mandatory  single
 	`
 
-	if err := ensureSchema(schema, "as-set", &object); err != nil {
+	return ensureSchema(schema, "as-block", &o.Object)
+}
+
+func NewAsSet(object rpsl.Object) (*AsSet, error) {
+	obj := NewAsSetUnchecked(object)
+	if err := obj.Validate(); err != nil {
 		return nil, err
 	}
 
-	obj := AsSet{Object: object}
 	return &obj, nil
+}
+
+func NewAsSetUnchecked(object rpsl.Object) AsSet {
+	return AsSet{Object: object}
 }

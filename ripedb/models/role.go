@@ -7,6 +7,8 @@ import (
 	"github.com/frederic-arr/rpsl-go"
 )
 
+var _ Model = Role{}
+
 type Role struct {
 	Object rpsl.Object
 }
@@ -19,7 +21,7 @@ func (o Role) Key() string {
 	return *o.Object.GetFirst("nic-hdl")
 }
 
-func NewRole(object rpsl.Object) (*Role, error) {
+func (o Role) Validate() error {
 	schema := `
         role:           mandatory  single     lookup key
         address:        mandatory  multiple
@@ -40,10 +42,18 @@ func NewRole(object rpsl.Object) (*Role, error) {
         source:         mandatory  single
 	`
 
-	if err := ensureSchema(schema, "role", &object); err != nil {
+	return ensureSchema(schema, "as-block", &o.Object)
+}
+
+func NewRole(object rpsl.Object) (*Role, error) {
+	obj := NewRoleUnchecked(object)
+	if err := obj.Validate(); err != nil {
 		return nil, err
 	}
 
-	obj := Role{Object: object}
 	return &obj, nil
+}
+
+func NewRoleUnchecked(object rpsl.Object) Role {
+	return Role{Object: object}
 }

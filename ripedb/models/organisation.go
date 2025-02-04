@@ -7,6 +7,8 @@ import (
 	"github.com/frederic-arr/rpsl-go"
 )
 
+var _ Model = Organisation{}
+
 type Organisation struct {
 	Object rpsl.Object
 }
@@ -19,7 +21,7 @@ func (o Organisation) Key() string {
 	return *o.Object.GetFirst("organisation")
 }
 
-func NewOrganisation(object rpsl.Object) (*Organisation, error) {
+func (o Organisation) Validate() error {
 	schema := `
         organisation:     mandatory  single     primary/lookup key
         org-name:         mandatory  single     lookup key
@@ -46,10 +48,18 @@ func NewOrganisation(object rpsl.Object) (*Organisation, error) {
         source:           mandatory  single
 	`
 
-	if err := ensureSchema(schema, "organisation", &object); err != nil {
+	return ensureSchema(schema, "as-block", &o.Object)
+}
+
+func NewOrganisation(object rpsl.Object) (*Organisation, error) {
+	obj := NewOrganisationUnchecked(object)
+	if err := obj.Validate(); err != nil {
 		return nil, err
 	}
 
-	obj := Organisation{Object: object}
 	return &obj, nil
+}
+
+func NewOrganisationUnchecked(object rpsl.Object) Organisation {
+	return Organisation{Object: object}
 }

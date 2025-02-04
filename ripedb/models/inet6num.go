@@ -7,6 +7,8 @@ import (
 	"github.com/frederic-arr/rpsl-go"
 )
 
+var _ Model = Inet6Num{}
+
 type Inet6Num struct {
 	Object rpsl.Object
 }
@@ -19,7 +21,7 @@ func (o Inet6Num) Key() string {
 	return *o.Object.GetFirst("inet6num")
 }
 
-func NewInet6Num(object rpsl.Object) (*Inet6Num, error) {
+func (o Inet6Num) Validate() error {
 	schema := `
         inet6num:         mandatory   single     primary/lookup key
         netname:          mandatory   single     lookup key
@@ -47,10 +49,18 @@ func NewInet6Num(object rpsl.Object) (*Inet6Num, error) {
         source:           mandatory   single
 	`
 
-	if err := ensureSchema(schema, "inet6num", &object); err != nil {
+	return ensureSchema(schema, "as-block", &o.Object)
+}
+
+func NewInet6Num(object rpsl.Object) (*Inet6Num, error) {
+	obj := NewInet6NumUnchecked(object)
+	if err := obj.Validate(); err != nil {
 		return nil, err
 	}
 
-	obj := Inet6Num{Object: object}
 	return &obj, nil
+}
+
+func NewInet6NumUnchecked(object rpsl.Object) Inet6Num {
+	return Inet6Num{Object: object}
 }

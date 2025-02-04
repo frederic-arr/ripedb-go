@@ -7,6 +7,8 @@ import (
 	"github.com/frederic-arr/rpsl-go"
 )
 
+var _ Model = KeyCert{}
+
 type KeyCert struct {
 	Object rpsl.Object
 }
@@ -19,7 +21,7 @@ func (o KeyCert) Key() string {
 	return *o.Object.GetFirst("key-cert")
 }
 
-func NewKeyCert(object rpsl.Object) (*KeyCert, error) {
+func (o KeyCert) Validate() error {
 	schema := `
         key-cert:       mandatory  single     primary/lookup key
         method:         generated  single
@@ -37,10 +39,18 @@ func NewKeyCert(object rpsl.Object) (*KeyCert, error) {
         source:         mandatory  single
 	`
 
-	if err := ensureSchema(schema, "key-cert", &object); err != nil {
+	return ensureSchema(schema, "as-block", &o.Object)
+}
+
+func NewKeyCert(object rpsl.Object) (*KeyCert, error) {
+	obj := NewKeyCertUnchecked(object)
+	if err := obj.Validate(); err != nil {
 		return nil, err
 	}
 
-	obj := KeyCert{Object: object}
 	return &obj, nil
+}
+
+func NewKeyCertUnchecked(object rpsl.Object) KeyCert {
+	return KeyCert{Object: object}
 }

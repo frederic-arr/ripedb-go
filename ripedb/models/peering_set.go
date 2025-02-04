@@ -7,6 +7,8 @@ import (
 	"github.com/frederic-arr/rpsl-go"
 )
 
+var _ Model = PeeringSet{}
+
 type PeeringSet struct {
 	Object rpsl.Object
 }
@@ -19,7 +21,7 @@ func (o PeeringSet) Key() string {
 	return *o.Object.GetFirst("peering-set")
 }
 
-func NewPeeringSet(object rpsl.Object) (*PeeringSet, error) {
+func (o PeeringSet) Validate() error {
 	schema := `
         peering-set:     mandatory  single     primary/lookup key
         descr:           optional   multiple
@@ -37,10 +39,18 @@ func NewPeeringSet(object rpsl.Object) (*PeeringSet, error) {
         source:          mandatory  single
 	`
 
-	if err := ensureSchema(schema, "peering-set", &object); err != nil {
+	return ensureSchema(schema, "as-block", &o.Object)
+}
+
+func NewPeeringSet(object rpsl.Object) (*PeeringSet, error) {
+	obj := NewPeeringSetUnchecked(object)
+	if err := obj.Validate(); err != nil {
 		return nil, err
 	}
 
-	obj := PeeringSet{Object: object}
 	return &obj, nil
+}
+
+func NewPeeringSetUnchecked(object rpsl.Object) PeeringSet {
+	return PeeringSet{Object: object}
 }

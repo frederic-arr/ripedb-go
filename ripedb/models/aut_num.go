@@ -7,6 +7,8 @@ import (
 	"github.com/frederic-arr/rpsl-go"
 )
 
+var _ Model = AutNum{}
+
 type AutNum struct {
 	Object rpsl.Object
 }
@@ -19,7 +21,7 @@ func (o AutNum) Key() string {
 	return *o.Object.GetFirst("aut-num")
 }
 
-func NewAutNum(object rpsl.Object) (*AutNum, error) {
+func (o AutNum) Validate() error {
 	schema := `
         aut-num:         mandatory  single     primary/lookup
         as-name:         mandatory  single
@@ -47,10 +49,18 @@ func NewAutNum(object rpsl.Object) (*AutNum, error) {
         source:          mandatory  single
 	`
 
-	if err := ensureSchema(schema, "aut-num", &object); err != nil {
+	return ensureSchema(schema, "as-block", &o.Object)
+}
+
+func NewAutNum(object rpsl.Object) (*AutNum, error) {
+	obj := NewAutNumUnchecked(object)
+	if err := obj.Validate(); err != nil {
 		return nil, err
 	}
 
-	obj := AutNum{Object: object}
 	return &obj, nil
+}
+
+func NewAutNumUnchecked(object rpsl.Object) AutNum {
+	return AutNum{Object: object}
 }

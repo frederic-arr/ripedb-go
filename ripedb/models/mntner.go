@@ -7,6 +7,8 @@ import (
 	"github.com/frederic-arr/rpsl-go"
 )
 
+var _ Model = Mntner{}
+
 type Mntner struct {
 	Object rpsl.Object
 }
@@ -19,7 +21,7 @@ func (o Mntner) Key() string {
 	return *o.Object.GetFirst("mntner")
 }
 
-func NewMntner(object rpsl.Object) (*Mntner, error) {
+func (o Mntner) Validate() error {
 	schema := `
         mntner:         mandatory  single     primary/lookup key
         descr:          optional   multiple
@@ -38,10 +40,18 @@ func NewMntner(object rpsl.Object) (*Mntner, error) {
         source:         mandatory  single
 	`
 
-	if err := ensureSchema(schema, "mntner", &object); err != nil {
+	return ensureSchema(schema, "as-block", &o.Object)
+}
+
+func NewMntner(object rpsl.Object) (*Mntner, error) {
+	obj := NewMntnerUnchecked(object)
+	if err := obj.Validate(); err != nil {
 		return nil, err
 	}
 
-	obj := Mntner{Object: object}
 	return &obj, nil
+}
+
+func NewMntnerUnchecked(object rpsl.Object) Mntner {
+	return Mntner{Object: object}
 }

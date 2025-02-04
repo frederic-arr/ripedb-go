@@ -7,6 +7,8 @@ import (
 	"github.com/frederic-arr/rpsl-go"
 )
 
+var _ Model = Person{}
+
 type Person struct {
 	Object rpsl.Object
 }
@@ -19,7 +21,7 @@ func (o Person) Key() string {
 	return *o.Object.GetFirst("nic-hdl")
 }
 
-func NewPerson(object rpsl.Object) (*Person, error) {
+func (o Person) Validate() error {
 	schema := `
 		person:           mandatory  single     lookup key
 		address:          mandatory  multiple
@@ -37,10 +39,18 @@ func NewPerson(object rpsl.Object) (*Person, error) {
 		source:           mandatory  single
 	`
 
-	if err := ensureSchema(schema, "person", &object); err != nil {
+	return ensureSchema(schema, "as-block", &o.Object)
+}
+
+func NewPerson(object rpsl.Object) (*Person, error) {
+	obj := NewPersonUnchecked(object)
+	if err := obj.Validate(); err != nil {
 		return nil, err
 	}
 
-	obj := Person{Object: object}
 	return &obj, nil
+}
+
+func NewPersonUnchecked(object rpsl.Object) Person {
+	return Person{Object: object}
 }

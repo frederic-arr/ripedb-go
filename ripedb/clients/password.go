@@ -149,7 +149,7 @@ func (c *RipePasswordClient) GetResource(resource string, key string) (*models.R
 }
 
 func (c *RipePasswordClient) PostResource(resource string, data models.Resource) (*models.Resource, error) {
-	err := ValidateResource(resource, data)
+	err := models.ValidateResource(resource, data)
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +163,7 @@ func (c *RipePasswordClient) PostResource(resource string, data models.Resource)
 }
 
 func (c *RipePasswordClient) PutResource(resource string, key string, data models.Resource) (*models.Resource, error) {
-	err := ValidateResource(resource, data)
+	err := models.ValidateResource(resource, data)
 	if err != nil {
 		return nil, err
 	}

@@ -7,6 +7,8 @@ import (
 	"github.com/frederic-arr/rpsl-go"
 )
 
+var _ Model = RtrSet{}
+
 type RtrSet struct {
 	Object rpsl.Object
 }
@@ -19,7 +21,7 @@ func (o RtrSet) Key() string {
 	return *o.Object.GetFirst("rtr-set")
 }
 
-func NewRtrSet(object rpsl.Object) (*RtrSet, error) {
+func (o RtrSet) Validate() error {
 	schema := `
         rtr-set:        mandatory  single     primary/lookup key
         descr:          optional   multiple
@@ -38,10 +40,18 @@ func NewRtrSet(object rpsl.Object) (*RtrSet, error) {
         source:         mandatory  single
 	`
 
-	if err := ensureSchema(schema, "rtr-set", &object); err != nil {
+	return ensureSchema(schema, "as-block", &o.Object)
+}
+
+func NewRtrSet(object rpsl.Object) (*RtrSet, error) {
+	obj := NewRtrSetUnchecked(object)
+	if err := obj.Validate(); err != nil {
 		return nil, err
 	}
 
-	obj := RtrSet{Object: object}
 	return &obj, nil
+}
+
+func NewRtrSetUnchecked(object rpsl.Object) RtrSet {
+	return RtrSet{Object: object}
 }

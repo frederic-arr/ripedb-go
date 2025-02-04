@@ -21,7 +21,7 @@ func (o AsBlock) Key() string {
 	return *o.Object.GetFirst("as-block")
 }
 
-func NewAsBlock(object rpsl.Object) (*AsBlock, error) {
+func (o AsBlock) Validate() error {
 	schema := `
         as-block:       mandatory  single     primary/lookup
         descr:          optional   multiple
@@ -35,10 +35,18 @@ func NewAsBlock(object rpsl.Object) (*AsBlock, error) {
         source:         mandatory  single
 	`
 
-	if err := ensureSchema(schema, "as-block", &object); err != nil {
+	return ensureSchema(schema, "as-block", &o.Object)
+}
+
+func NewAsBlock(object rpsl.Object) (*AsBlock, error) {
+	obj := NewAsBlockUnchecked(object)
+	if err := obj.Validate(); err != nil {
 		return nil, err
 	}
 
-	obj := AsBlock{Object: object}
 	return &obj, nil
+}
+
+func NewAsBlockUnchecked(object rpsl.Object) AsBlock {
+	return AsBlock{Object: object}
 }
