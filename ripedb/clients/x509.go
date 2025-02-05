@@ -22,6 +22,26 @@ type RipeX509Client struct {
 	Key  []byte
 }
 
+func (c *RipeX509Client) GetEndpoint() string {
+	return c.Opts.Endpoint
+}
+
+func (c *RipeX509Client) GetSource() string {
+	return c.Opts.Source
+}
+
+func (c *RipeX509Client) GetFilter() bool {
+	return c.Opts.Filter
+}
+
+func (c *RipeX509Client) GetFormat() bool {
+	return c.Opts.Format
+}
+
+func (c *RipeX509Client) GetNoError() bool {
+	return c.Opts.NoError
+}
+
 func (c *RipeX509Client) SetEndpoint(endpoint string) {
 	c.Opts.Endpoint = endpoint
 }

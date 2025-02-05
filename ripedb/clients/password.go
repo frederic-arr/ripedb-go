@@ -21,6 +21,26 @@ type RipePasswordClient struct {
 	Password string
 }
 
+func (c *RipePasswordClient) GetEndpoint() string {
+	return c.Opts.Endpoint
+}
+
+func (c *RipePasswordClient) GetSource() string {
+	return c.Opts.Source
+}
+
+func (c *RipePasswordClient) GetFilter() bool {
+	return c.Opts.Filter
+}
+
+func (c *RipePasswordClient) GetFormat() bool {
+	return c.Opts.Format
+}
+
+func (c *RipePasswordClient) GetNoError() bool {
+	return c.Opts.NoError
+}
+
 func (c *RipePasswordClient) SetEndpoint(endpoint string) {
 	c.Opts.Endpoint = endpoint
 }

@@ -29,6 +29,12 @@ type RipeClientOptions struct {
 }
 
 type RipeDbClient interface {
+	GetEndpoint() string
+	GetSource() string
+	GetFilter() bool
+	GetFormat() bool
+	GetNoError() bool
+
 	SetEndpoint(endpoint string)
 	SetSource(source string)
 	SetFilter(filter bool)

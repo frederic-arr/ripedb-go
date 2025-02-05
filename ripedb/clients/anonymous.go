@@ -17,6 +17,26 @@ type RipeAnonymousClient struct {
 	Opts RipeClientOptions
 }
 
+func (c *RipeAnonymousClient) GetEndpoint() string {
+	return c.Opts.Endpoint
+}
+
+func (c *RipeAnonymousClient) GetSource() string {
+	return c.Opts.Source
+}
+
+func (c *RipeAnonymousClient) GetFilter() bool {
+	return c.Opts.Filter
+}
+
+func (c *RipeAnonymousClient) GetFormat() bool {
+	return c.Opts.Format
+}
+
+func (c *RipeAnonymousClient) GetNoError() bool {
+	return c.Opts.NoError
+}
+
 func (c *RipeAnonymousClient) SetEndpoint(endpoint string) {
 	c.Opts.Endpoint = endpoint
 }
