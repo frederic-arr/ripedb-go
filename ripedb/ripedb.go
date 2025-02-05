@@ -4,77 +4,51 @@
 package ripedb
 
 import (
-	"github.com/frederic-arr/ripedb-go/ripedb/clients"
+	"fmt"
+	"log/slog"
 )
 
-type RipeDbClient = clients.RipeDbClient
-type RipeAnonymousClient = clients.RipeAnonymousClient
-type RipePasswordClient = clients.RipePasswordClient
-
-const (
-	RIPE_TEST_ENDPOINT_INSECURE = "http://rest-test.db.ripe.net"
-	RIPE_TEST_ENDPOINT          = "https://rest-test.db.ripe.net"
-	RIPE_TEST_ENDPOINT_MTLS     = "https://rest-cert-test.db.ripe.net"
-	RIPE_PROD_ENDPOINT_INSECURE = "http://rest.db.ripe.net"
-	RIPE_PROD_ENDPOINT          = "https://rest.db.ripe.net"
-	RIPE_PROD_ENDPOINT_MTLS     = "https://rest-cert.db.ripe.net"
-)
-
-func partialToOptions(input *clients.RipeClientOptionsPartial, defaultEndpoint string) clients.RipeClientOptions {
-	opts := clients.RipeClientOptions{
-		Endpoint: defaultEndpoint,
-		Filter:   false,
-		Format:   true,
-		NoError:  false,
-		Source:   "ripe",
+// Create a new instance of RipeClient using the provided options.
+//
+// Parameters:
+//   - opts: A pointer to RipeClientOptions containing the configuration settings for the client.
+//
+// Returns:
+//   - *RipeClient: A pointer to the initialized RipeClient instance.
+//   - error: An error if the client initialization fails.
+//
+// Example Usage:
+//
+//	opts := &RipeClientOptions{ /* configure options */ }
+//	client, err := NewRipeClient(opts)
+//	if err != nil {
+//	    log.Fatalf("Failed to create RipeClient: %v", err)
+//	}
+func NewRipeClient(opts *RipeClientOptions) (*RipeClient, error) {
+	if opts.User != nil && opts.Password == nil {
+		return nil, fmt.Errorf("a username was provided without a password")
 	}
 
-	partial := clients.RipeClientOptionsPartial{}
-	if input != nil {
-		partial = *input
+	if opts.Password != nil && *opts.Password == "" {
+		return nil, fmt.Errorf("an empty password was provided")
 	}
 
-	if partial.Endpoint != nil {
-		opts.Endpoint = *partial.Endpoint
+	if (opts.Certificate != nil || opts.Key != nil) && (opts.Certificate == nil || opts.Key == nil) {
+		return nil, fmt.Errorf("incomplete x.509 client authentication parameters")
 	}
 
-	if partial.Filter != nil {
-		opts.Filter = *partial.Filter
+	if opts.Password != nil && (opts.Certificate != nil || opts.Key != nil) {
+		return nil, fmt.Errorf("cannot use X.509 client authentication simulatenously with basic username/password authentication")
 	}
 
-	if partial.Format != nil {
-		opts.Format = *partial.Format
-	}
-
-	if partial.NoError != nil {
-		opts.NoError = *partial.NoError
-	}
-
-	if partial.Source != nil {
-		opts.Source = *partial.Source
-	}
-
-	return opts
-}
-
-func NewRipeAnonymousClient(opts *clients.RipeClientOptionsPartial) *RipeAnonymousClient {
-	return &RipeAnonymousClient{
-		Opts: partialToOptions(opts, RIPE_PROD_ENDPOINT),
-	}
-}
-
-func NewRipePasswordClient(user *string, password string, opts *clients.RipeClientOptionsPartial) *clients.RipePasswordClient {
-	return &clients.RipePasswordClient{
-		Opts:     partialToOptions(opts, RIPE_PROD_ENDPOINT),
-		User:     user,
-		Password: password,
-	}
-}
-
-func NewRipeX509Client(cert []byte, key []byte, opts *clients.RipeClientOptionsPartial) *clients.RipeX509Client {
-	return &clients.RipeX509Client{
-		Opts: partialToOptions(opts, RIPE_PROD_ENDPOINT_MTLS),
-		Cert: cert,
-		Key:  key,
+	if opts.Password != nil {
+		slog.Debug("Using basic authentication")
+		return newPasswordClient(opts)
+	} else if opts.Certificate != nil {
+		slog.Debug("Using X.509 client certificate authentication")
+		return newX509Client(opts)
+	} else {
+		slog.Debug("Using anonymous authentication")
+		return newAnonymousClient(opts)
 	}
 }

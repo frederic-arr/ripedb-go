@@ -89,7 +89,7 @@ func formatResponse(resp *models.Resource) {
 	}
 }
 
-func (c *UpsertCmd) Run(ctx *Context, client *ripedb.RipeDbClient) error {
+func (c *UpsertCmd) Run(ctx *Context, client *ripedb.RipeClient) error {
 	resource := c.Resource
 	key := c.Key
 	input := c.Input
@@ -130,7 +130,7 @@ func (c *UpsertCmd) Run(ctx *Context, client *ripedb.RipeDbClient) error {
 	return nil
 }
 
-func (c *GetCmd) Run(ctx *Context, client *ripedb.RipeDbClient) error {
+func (c *GetCmd) Run(ctx *Context, client *ripedb.RipeClient) error {
 	resource := c.Resource
 	key := c.Key
 
@@ -143,7 +143,7 @@ func (c *GetCmd) Run(ctx *Context, client *ripedb.RipeDbClient) error {
 	return nil
 }
 
-func (c *DeleteCmd) Run(ctx *Context, client *ripedb.RipeDbClient) error {
+func (c *DeleteCmd) Run(ctx *Context, client *ripedb.RipeClient) error {
 	resource := c.Resource
 	key := c.Key
 
@@ -159,37 +159,35 @@ func (c *DeleteCmd) Run(ctx *Context, client *ripedb.RipeDbClient) error {
 func main() {
 	ctx := kong.Parse(&CLI)
 
-	var client ripedb.RipeDbClient
-	if CLI.Password != nil && *CLI.Password != "" {
-		client = ripedb.NewRipePasswordClient(CLI.User, *CLI.Password, nil)
-	} else if CLI.Key != nil || CLI.Cert != nil {
+	opts := ripedb.RipeClientOptions{
+		Endpoint: CLI.Endpoint,
+		Source:   CLI.Source,
+		User:     CLI.User,
+		Password: CLI.Password,
+	}
+
+	if CLI.Key != nil || CLI.Cert != nil {
 		if CLI.Key == nil || CLI.Cert == nil {
-			log.Fatal("Both key and cert must be provided.")
+			log.Fatal("both key and cert must be provided")
 		}
 
 		cert, err := os.ReadFile(*CLI.Cert)
 		if err != nil {
-			log.Fatal("Error reading certificate:", err)
+			log.Fatal("error reading certificate:", err)
 		}
 
 		key, err := os.ReadFile(*CLI.Key)
 		if err != nil {
-			log.Fatal("Error reading private key:", err)
+			log.Fatal("error reading private key:", err)
 		}
 
-		client = ripedb.NewRipeX509Client(cert, key, nil)
-	} else {
-		client = ripedb.NewRipeAnonymousClient(nil)
+		opts.Certificate = &cert
+		opts.Key = &key
 	}
 
-	if CLI.Endpoint != nil {
-		client.SetEndpoint(*CLI.Endpoint)
-	}
+	client, err := ripedb.NewRipeClient(&opts)
+	ctx.FatalIfErrorf(err)
 
-	if CLI.Source != nil {
-		client.SetSource(*CLI.Source)
-	}
-
-	err := ctx.Run(&Context{Debug: CLI.Debug}, &client)
+	err = ctx.Run(&Context{Debug: CLI.Debug}, client)
 	ctx.FatalIfErrorf(err)
 }
