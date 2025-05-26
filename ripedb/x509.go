@@ -7,6 +7,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 
@@ -63,7 +64,11 @@ func newX509Client(opts *RipeClientOptions) (*RipeClient, error) {
 			return nil, err
 		}
 
-		defer resp.Body.Close()
+		defer func() {
+            if err := resp.Body.Close(); err != nil {
+                slog.Error("failed to close HTTP client", "error", err)
+            }
+        }()
 		return parseResponse(*resp, fullOpts.NoError)
 	}
 

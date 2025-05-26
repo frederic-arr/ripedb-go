@@ -61,7 +61,11 @@ func newPasswordClient(opts *RipeClientOptions) (*RipeClient, error) {
 			return nil, err
 		}
 
-		defer resp.Body.Close()
+		defer func() {
+            if err := resp.Body.Close(); err != nil {
+                slog.Error("failed to close HTTP client", "error", err)
+            }
+        }()
 		return parseResponse(*resp, fullOpts.NoError)
 	}
 
