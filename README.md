@@ -16,7 +16,7 @@ This is a Go client for the RIPE Database RESTful Web Service API. It is a simpl
 ### Installation
 
 ```bash
-go get github.com/frederic-arr/ripedb-go/cmd/ripedb@latest
+go get github.com/frederic-arr/ripedb-go@latest
 ```
 
 ### Usage
