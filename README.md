@@ -16,7 +16,7 @@ This is a Go client for the RIPE Database RESTful Web Service API. It is a simpl
 ### Installation
 
 ```bash
-go get github.com/frederic-arr/ripedb-go/cmd/ripedb@latest
+go get github.com/frederic-arr/ripedb-go@latest
 ```
 
 ### Usage
@@ -100,8 +100,8 @@ Please refer to the [Appendix I - Client Certificate Authentication](https://doc
 $ ripedb get organisation ORG-CEOf1-RIPE
 ```
 
-![Terminal screenshot of the output](./.github/assets/cern-dark.png#gh-dark-mode-only)
-![Terminal screenshot of the output](./.github/assets/cern-light.png#gh-light-mode-only)
+![Terminal screenshot of the output (dark theme)](./.github/assets/cern-dark.png#gh-dark-mode-only)
+![Terminal screenshot of the output (light theme)](./.github/assets/cern-light.png#gh-light-mode-only)
 
 <details>
 

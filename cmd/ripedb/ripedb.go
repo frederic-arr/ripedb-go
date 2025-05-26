@@ -6,6 +6,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"log/slog"
 	"os"
 
 	"github.com/alecthomas/kong"
@@ -98,7 +99,11 @@ func (c *UpsertCmd) Run(ctx *Context, client *ripedb.RipeClient) error {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()
+	defer func() {
+        if err := file.Close(); err != nil {
+            slog.Error("failed to close file", "error", err)
+        }
+    }()
 
 	raw := []byte{}
 	buf := make([]byte, 1024)
