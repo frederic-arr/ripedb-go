@@ -21,6 +21,8 @@ type RipeClientOptions struct {
 
 	Format *bool
 
+	UserAgent *string
+
 	// A filtering process restricts some data from the default query response. This applies to email contact data.
 	// By default, the filter is disabled, you can enable it with this flag
 	Filter *bool
@@ -49,11 +51,12 @@ type RipeClientOptions struct {
 }
 
 type ripeClientOptions struct {
-	Endpoint string
-	Format   bool
-	Filter   bool
-	NoError  bool
-	Source   string
+	Endpoint  string
+	Format    bool
+	Filter    bool
+	NoError   bool
+	Source    string
+	UserAgent string
 }
 
 type RipeClient struct {
@@ -81,6 +84,10 @@ func (c *RipeClient) GetNoError() bool {
 	return c.opts.NoError
 }
 
+func (c *RipeClient) GetUserAgent() string {
+	return c.opts.UserAgent
+}
+
 func (c *RipeClient) SetEndpoint(endpoint string) {
 	c.opts.Endpoint = endpoint
 }
@@ -99,6 +106,10 @@ func (c *RipeClient) SetFormat(format bool) {
 
 func (c *RipeClient) SetNoError(noError bool) {
 	c.opts.NoError = noError
+}
+
+func (c *RipeClient) SetUserAgent(userAgent string) {
+	c.opts.UserAgent = userAgent
 }
 
 func (c *RipeClient) GetObject(resource string, key string) (*rpsl.Object, error) {

@@ -42,9 +42,10 @@ func newX509Client(opts *RipeClientOptions) (*RipeClient, error) {
 			return nil, err
 		}
 
-		req.Header.Add("Accept", "application/json")
+		req.Header.Set("User-Agent", fullOpts.UserAgent)
+		req.Header.Set("Accept", "application/json")
 		if method == "POST" || method == "PUT" {
-			req.Header.Add("Content-Type", "application/json")
+			req.Header.Set("Content-Type", "application/json")
 		}
 
 		if !fullOpts.Format {
@@ -65,10 +66,10 @@ func newX509Client(opts *RipeClientOptions) (*RipeClient, error) {
 		}
 
 		defer func() {
-            if err := resp.Body.Close(); err != nil {
-                slog.Error("failed to close HTTP client", "error", err)
-            }
-        }()
+			if err := resp.Body.Close(); err != nil {
+				slog.Error("failed to close HTTP client", "error", err)
+			}
+		}()
 		return parseResponse(*resp, fullOpts.NoError)
 	}
 

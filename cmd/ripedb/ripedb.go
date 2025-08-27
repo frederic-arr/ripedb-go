@@ -20,16 +20,19 @@ type Context struct {
 }
 
 var CLI struct {
-	Debug    bool      `help:"Enable debug mode."`
-	User     *string   `env:"RIPEDB_USER" help:"The user to use for authentication."`
-	Password *string   `env:"RIPEDB_PASSWORD" help:"The password to use for authentication."`
-	Key      *string   `env:"RIPEDB_KEYFILE" help:"The key to use for authentication."`
-	Cert     *string   `env:"RIPEDB_CERTFILE" help:"The certificate to use for authentication."`
-	Endpoint *string   `env:"RIPEDB_ENDPOINT" help:"The endpoint of the database."`
-	Source   *string   `env:"RIPEDB_SOURCE" help:"The source of the database."`
-	Get      GetCmd    `cmd:"" help:"Fetch a resource from the RIPE database."`
-	Upsert   UpsertCmd `cmd:"" help:"Create or update a resource from the RIPE database."`
-	Delete   DeleteCmd `cmd:"" help:"Delete a resource from the RIPE database."`
+	Debug     bool    `help:"Enable debug mode."`
+	User      *string `env:"RIPEDB_USER" help:"The user to use for authentication."`
+	Password  *string `env:"RIPEDB_PASSWORD" help:"The password to use for authentication."`
+	Key      *string `env:"RIPEDB_APIKEY" help:"The API key to use for authentication."`
+	Key       *string `env:"RIPEDB_KEYFILE" help:"The key to use for authentication."`
+	Cert      *string `env:"RIPEDB_CERTFILE" help:"The certificate to use for authentication."`
+	Endpoint  *string `env:"RIPEDB_ENDPOINT" help:"The endpoint of the database."`
+	Source    *string `env:"RIPEDB_SOURCE" help:"The source of the database."`
+	UserAgent *string `env:"RIPEDB_USERAGENT" help:"The User-Agent for the HTTP client."`
+
+	Get    GetCmd    `cmd:"" help:"Fetch a resource from the RIPE database."`
+	Upsert UpsertCmd `cmd:"" help:"Create or update a resource from the RIPE database."`
+	Delete DeleteCmd `cmd:"" help:"Delete a resource from the RIPE database."`
 }
 
 type GetCmd struct {
@@ -100,10 +103,10 @@ func (c *UpsertCmd) Run(ctx *Context, client *ripedb.RipeClient) error {
 		log.Fatal(err)
 	}
 	defer func() {
-        if err := file.Close(); err != nil {
-            slog.Error("failed to close file", "error", err)
-        }
-    }()
+		if err := file.Close(); err != nil {
+			slog.Error("failed to close file", "error", err)
+		}
+	}()
 
 	raw := []byte{}
 	buf := make([]byte, 1024)
@@ -164,11 +167,19 @@ func (c *DeleteCmd) Run(ctx *Context, client *ripedb.RipeClient) error {
 func main() {
 	ctx := kong.Parse(&CLI)
 
+	loggerOpts := slog.HandlerOptions{}
+	if CLI.Debug {
+		loggerOpts.Level = slog.LevelDebug
+	}
+	logger := slog.New(slog.NewTextHandler(os.Stderr, &loggerOpts))
+	slog.SetDefault(logger)
+
 	opts := ripedb.RipeClientOptions{
-		Endpoint: CLI.Endpoint,
-		Source:   CLI.Source,
-		User:     CLI.User,
-		Password: CLI.Password,
+		Endpoint:  CLI.Endpoint,
+		Source:    CLI.Source,
+		UserAgent: CLI.UserAgent,
+		User:      CLI.User,
+		Password:  CLI.Password,
 	}
 
 	if CLI.Key != nil || CLI.Cert != nil {

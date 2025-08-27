@@ -23,7 +23,9 @@ func newAnonymousClient(opts *RipeClientOptions) (*RipeClient, error) {
 			return nil, err
 		}
 
-		req.Header.Add("Accept", "application/json")
+		req.Header.Set("User-Agent", fullOpts.UserAgent)
+		req.Header.Set("Accept", "application/json")
+
 		if !fullOpts.Format {
 			q := req.URL.Query()
 			q.Add("unformatted", "")
@@ -41,11 +43,11 @@ func newAnonymousClient(opts *RipeClientOptions) (*RipeClient, error) {
 			return nil, err
 		}
 
-        defer func() {
-            if err := resp.Body.Close(); err != nil {
-                slog.Error("failed to close HTTP client", "error", err)
-            }
-        }()
+		defer func() {
+			if err := resp.Body.Close(); err != nil {
+				slog.Error("failed to close HTTP client", "error", err)
+			}
+		}()
 		return parseResponse(*resp, fullOpts.NoError)
 	}
 

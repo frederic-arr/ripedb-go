@@ -29,11 +29,7 @@ func newPasswordClient(opts *RipeClientOptions) (*RipeClient, error) {
 			return nil, err
 		}
 
-		req.Header.Add("Accept", "application/json")
-		if method == "POST" || method == "PUT" {
-			req.Header.Add("Content-Type", "application/json")
-		}
-
+		req.Header.Set("User-Agent", fullOpts.UserAgent)
 		if opts.User != nil {
 			slog.Debug("Username provided, authenticating via 'Authorization` HTTP header")
 			req.SetBasicAuth(*opts.User, *opts.Password)
@@ -42,6 +38,11 @@ func newPasswordClient(opts *RipeClientOptions) (*RipeClient, error) {
 			q := req.URL.Query()
 			q.Add("password", *opts.Password)
 			req.URL.RawQuery = q.Encode()
+		}
+
+		req.Header.Set("Accept", "application/json")
+		if method == "POST" || method == "PUT" {
+			req.Header.Set("Content-Type", "application/json")
 		}
 
 		if !fullOpts.Format {
@@ -62,10 +63,10 @@ func newPasswordClient(opts *RipeClientOptions) (*RipeClient, error) {
 		}
 
 		defer func() {
-            if err := resp.Body.Close(); err != nil {
-                slog.Error("failed to close HTTP client", "error", err)
-            }
-        }()
+			if err := resp.Body.Close(); err != nil {
+				slog.Error("failed to close HTTP client", "error", err)
+			}
+		}()
 		return parseResponse(*resp, fullOpts.NoError)
 	}
 

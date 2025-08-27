@@ -22,11 +22,12 @@ const (
 
 func partialToOptions(input *RipeClientOptions, defaultEndpoint string) ripeClientOptions {
 	opts := ripeClientOptions{
-		Endpoint: defaultEndpoint,
-		Filter:   false,
-		Format:   true,
-		NoError:  false,
-		Source:   "ripe",
+		Endpoint:  defaultEndpoint,
+		Filter:    false,
+		Format:    true,
+		NoError:   false,
+		Source:    "ripe",
+		UserAgent: "ripedb-go (https://github.com/frederic-arr/ripedb-go)",
 	}
 
 	partial := RipeClientOptions{}
@@ -52,6 +53,10 @@ func partialToOptions(input *RipeClientOptions, defaultEndpoint string) ripeClie
 
 	if partial.Source != nil {
 		opts.Source = *partial.Source
+	}
+
+	if partial.UserAgent != nil {
+		opts.UserAgent = *partial.UserAgent
 	}
 
 	return opts
