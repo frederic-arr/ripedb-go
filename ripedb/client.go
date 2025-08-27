@@ -30,18 +30,22 @@ type RipeClientOptions struct {
 	// If set to `true`, L7 errors (HTTP or RIPE) are not handled
 	NoError *bool
 
-	// Username for the basic authentication protocol. You cannot use X.509 Client Authentication and Basic
-	// authentication at the same time.
+	// API key for the basic authentication protocol.
+	// You cannot use API key Authentication along with any other authentication protocol.
+	ApiKey *string
+
+	// Username for the basic authentication protocol.
+	// You cannot use Password Authentication along with any other authentication protocol.
 	User *string
 
 	// Password for the basic authentication protocol. If no `user` is provided, the authentication will
-	// be made through the `password` query parameter instead of the `Authorizatio` header. You cannot
-	// use X.509 Client Authentication and Basic authentication at the same time.
+	// be made through the `password` query parameter instead of the `Authorizatio` header.
+	// You cannot use Password Authentication along with any other authentication protocol.
 	Password *string
 
 	// PEM-encoded client certificate for TLS authentication. Both `certificate` and `key` must be
 	// provided. The `endpoint` field must be set appropriately if you are not using the default production
-	// API. You cannot use X.509 Client Authentication and Basic authentication at the same time.
+	// API. You cannot use X.509 Client Authentication along with any other authentication protocol.
 	Certificate *[]byte
 
 	// PEM-encoded client certificate key for TLS authentication. Both `certificate` and `key` must be
