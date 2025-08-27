@@ -6,7 +6,6 @@ package ripedb
 import (
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"net/http"
 
 	"github.com/frederic-arr/ripedb-go/ripedb/models"
@@ -36,27 +35,22 @@ func partialToOptions(input *RipeClientOptions, defaultEndpoint string) ripeClie
 	}
 
 	if partial.Endpoint != nil {
-		slog.Debug("Endpoint not configured, using default value")
 		opts.Endpoint = *partial.Endpoint
 	}
 
 	if partial.Filter != nil {
-		slog.Debug("Filter not configured, using default value")
 		opts.Filter = *partial.Filter
 	}
 
 	if partial.Format != nil {
-		slog.Debug("Format not configured, using default value")
 		opts.Format = *partial.Format
 	}
 
 	if partial.NoError != nil {
-		slog.Debug("NoError not configured, using default value")
 		opts.NoError = *partial.NoError
 	}
 
 	if partial.Source != nil {
-		slog.Debug("Source not configured, using default value")
 		opts.Source = *partial.Source
 	}
 
