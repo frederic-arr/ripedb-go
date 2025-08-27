@@ -8,8 +8,8 @@ This is a Go client for the RIPE Database RESTful Web Service API. It is a simpl
 - Create/Update/Delete operations on single resources
 - Authentification schemes
   - Anonymous
-  - Password & [API Key](https://docs.db.ripe.net/23.Appendices/11-Appendix-K--API-Keys.html)
-  - [X.509 Client Certificate](https://docs.db.ripe.net/Appendices/Appendix-I--Client-Certificate-Authentication/)
+  - Password & [API Key](https://docs.db.ripe.net/Appendices/Appendix-K--API-Keys)
+  - [X.509 Client Certificate](https://docs.db.ripe.net/Appendices/Appendix-I--Client-Certificate-Authentication)
 
 ## Library
 
@@ -92,7 +92,7 @@ $ ripedb --cert <cert> --key <key> get organisation ORG-CEOf1-RIPE
 
 Alternatively, you can set the `RIPEDB_CERTFILE` and `RIPEDB_KEYFILE` environment variables.
 
-Please refer to the [Appendix I - Client Certificate Authentication](https://docs.db.ripe.net/Appendices/Appendix-I--Client-Certificate-Authentication/) for more information on how to generate a client certificate.
+Please refer to the [Appendix I - Client Certificate Authentication](https://docs.db.ripe.net/Appendices/Appendix-I--Client-Certificate-Authentication) for more information on how to generate a client certificate.
 
 ### Example
 
