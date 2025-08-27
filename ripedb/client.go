@@ -36,11 +36,15 @@ type RipeClientOptions struct {
 
 	// Username for the basic authentication protocol.
 	// You cannot use Password Authentication along with any other authentication protocol.
+	//
+	// Deprecated: RIPE NCC is deprecating MD5 hashed passwords by the end of 2025.
 	User *string
 
 	// Password for the basic authentication protocol. If no `user` is provided, the authentication will
 	// be made through the `password` query parameter instead of the `Authorizatio` header.
 	// You cannot use Password Authentication along with any other authentication protocol.
+	//
+	// Deprecated: RIPE NCC is deprecating MD5 hashed passwords by the end of 2025.
 	Password *string
 
 	// PEM-encoded client certificate for TLS authentication. Both `certificate` and `key` must be

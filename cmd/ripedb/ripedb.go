@@ -21,8 +21,8 @@ type Context struct {
 
 var CLI struct {
 	Debug     bool    `help:"Enable debug mode."`
-	User      *string `env:"RIPEDB_USER" help:"The user to use for authentication."`
-	Password  *string `env:"RIPEDB_PASSWORD" help:"The password to use for authentication."`
+	User      *string `env:"RIPEDB_USER" help:"(DEPRECATED) The user to use for authentication."`
+	Password  *string `env:"RIPEDB_PASSWORD" help:"(DEPRECATED) The password to use for authentication."`
 	ApiKey    *string `env:"RIPEDB_APIKEY" help:"The API key to use for authentication."`
 	Key       *string `env:"RIPEDB_KEYFILE" help:"The key to use for authentication."`
 	Cert      *string `env:"RIPEDB_CERTFILE" help:"The certificate to use for authentication."`

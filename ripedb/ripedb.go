@@ -64,6 +64,7 @@ func NewRipeClient(opts *RipeClientOptions) (*RipeClient, error) {
 
 	if isUsingPasswordAuth {
 		slog.Debug("Using basic authentication")
+		slog.Warn("Basic authentication will be deprecated by the end of 2025")
 		return newPasswordClient(opts)
 	} else if isUsingApiKeyAuth {
 		slog.Debug("Using API key authentication")

@@ -8,8 +8,9 @@ This is a Go client for the RIPE Database RESTful Web Service API. It is a simpl
 - Create/Update/Delete operations on single resources
 - Authentification schemes
   - Anonymous
-  - Password & [API Key](https://docs.db.ripe.net/Appendices/Appendix-K--API-Keys)
+  - [API Key](https://docs.db.ripe.net/Appendices/Appendix-K--API-Keys)
   - [X.509 Client Certificate](https://docs.db.ripe.net/Appendices/Appendix-I--Client-Certificate-Authentication)
+  - Username/Password ([**DEPRECATED**](https://mailman.ripe.net/archives/list/db-wg@ripe.net/thread/NGCRQWJPF7MT24V2MVJWIHVKHLEPMBOQ/))
 
 ## Library
 
@@ -68,19 +69,17 @@ ripedb delete <resource> <key>
 
 The anonymous authentication scheme is the default one. It does not require any credentials.
 
-#### Password & API Key
+#### API Key
 
-The password authentication scheme requires a username and a password. The username is the RIPE Database user handle.
+The API key authentication scheme requires an API key.
 
 ```bash
-$ ripedb --user <username> --password <password> get organisation ORG-CEOf1-RIPE
+$ ripedb --api-key <apikey> get organisation ORG-CEOf1-RIPE
 ```
 
-Alternatively, you can set the `RIPEDB_USER` and `RIPEDB_PASSWORD` environment variables.
+Alternatively, you can set the `RIPEDB_APIKEY` environment variable.
 
-> [!CAUTION]
-> It is possible to provider the password without the username, but it is not recommended.
-> This will pass the password as a query parameter in the URL (instead of the Authorization header).
+Please refer to the [Appendix K - API Keys](https://docs.db.ripe.net/Appendices/Appendix-K--API-Keys) for more information on how to generate an API key.
 
 #### X.509 Client Certificate
 
@@ -93,6 +92,23 @@ $ ripedb --cert <cert> --key <key> get organisation ORG-CEOf1-RIPE
 Alternatively, you can set the `RIPEDB_CERTFILE` and `RIPEDB_KEYFILE` environment variables.
 
 Please refer to the [Appendix I - Client Certificate Authentication](https://docs.db.ripe.net/Appendices/Appendix-I--Client-Certificate-Authentication) for more information on how to generate a client certificate.
+
+#### Password
+
+> [!WARNING]
+> RIPE NCC is deprecating MD5 hashed passwords by the end of 2025.
+
+The password authentication scheme requires a username and a password. The username is the RIPE Database user handle.
+
+```bash
+$ ripedb --user <username> --password <password> get organisation ORG-CEOf1-RIPE
+```
+
+Alternatively, you can set the `RIPEDB_USER` and `RIPEDB_PASSWORD` environment variables.
+
+> [!CAUTION]
+> It is possible to provider the password without the username, but it is not recommended.
+> This will pass the password as a query parameter in the URL (instead of the Authorization header).
 
 ### Example
 
