@@ -4,5 +4,5 @@ go 1.22.5
 
 require (
 	github.com/alecthomas/kong v1.14.0
-	github.com/frederic-arr/rpsl-go v0.3.2
+	github.com/frederic-arr/rpsl-go v0.4.0
 )

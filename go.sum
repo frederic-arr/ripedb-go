@@ -4,7 +4,7 @@ github.com/alecthomas/kong v1.14.0 h1:gFgEUZWu2ZmZ+UhyZ1bDhuutbKN1nTtJTwh19Wsn21
 github.com/alecthomas/kong v1.14.0/go.mod h1:wrlbXem1CWqUV5Vbmss5ISYhsVPkBb1Yo7YKJghju2I=
 github.com/alecthomas/repr v0.5.2 h1:SU73FTI9D1P5UNtvseffFSGmdNci/O6RsqzeXJtP0Qs=
 github.com/alecthomas/repr v0.5.2/go.mod h1:Fr0507jx4eOXV7AlPV6AVZLYrLIuIeSOWtW57eE/O/4=
-github.com/frederic-arr/rpsl-go v0.3.2 h1:t+4iJoXaYn7D9V1R95L1s9aZLyhur2fe0Me96+Dfn28=
-github.com/frederic-arr/rpsl-go v0.3.2/go.mod h1:CtPQg+MhImDmC0m3YP5PtZQFQTDQRX2yo2172ZTiYNY=
+github.com/frederic-arr/rpsl-go v0.4.0 h1:5RvDZjG31oFU8NTXnI5YIA77b8kUNfklhh0td81teD0=
+github.com/frederic-arr/rpsl-go v0.4.0/go.mod h1:CtPQg+MhImDmC0m3YP5PtZQFQTDQRX2yo2172ZTiYNY=
 github.com/hexops/gotextdiff v1.0.3 h1:gitA9+qJrrTCsiCl7+kh75nPqQt1cx4ZkudSTLoUqJM=
 github.com/hexops/gotextdiff v1.0.3/go.mod h1:pSWU5MAI3yDq+fZBTazCSJysOMbxWL1BSow5/V2vxeg=
