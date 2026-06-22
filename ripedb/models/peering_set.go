@@ -27,20 +27,20 @@ func (o PeeringSet) Validate() error {
 
 func (o PeeringSet) ValidateWithOptions(skipUnknownKeys bool, skipKeys []string) error {
 	schema := `
-        peering-set:     mandatory  single     primary/lookup key
-        descr:           optional   multiple
-        peering:         optional   multiple
-        mp-peering:      optional   multiple
-        remarks:         optional   multiple
-        org:             optional   multiple   inverse key
-        tech-c:          mandatory  multiple   inverse key
-        admin-c:         mandatory  multiple   inverse key
-        notify:          optional   multiple   inverse key
-        mnt-by:          mandatory  multiple   inverse key
-        mnt-lower:       optional   multiple   inverse key
-        created:         generated  single
-        last-modified:   generated  single
-        source:          mandatory  single
+        peering-set:     mandatory   single     primary/lookup key
+        descr:           optional    multiple
+        peering:         conditional multiple
+        mp-peering:      conditional multiple
+        remarks:         optional    multiple
+        org:             optional    multiple   inverse key
+        tech-c:          mandatory   multiple   inverse key
+        admin-c:         mandatory   multiple   inverse key
+        notify:          optional    multiple   inverse key
+        mnt-by:          mandatory   multiple   inverse key
+        mnt-lower:       optional    multiple   inverse key
+        created:         generated   single
+        last-modified:   generated   single
+        source:          mandatory   single
 	`
 
 	return ensureSchema(schema, "peering-set", &o.Object, skipUnknownKeys, skipKeys)

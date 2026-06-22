@@ -28,19 +28,20 @@ func (o Person) Validate() error {
 func (o Person) ValidateWithOptions(skipUnknownKeys bool, skipKeys []string) error {
 	schema := `
 		person:           mandatory  single     lookup key
-		address:          mandatory  multiple
-		phone:            mandatory  multiple
-		fax-no:           optional   multiple
-		e-mail:           optional   multiple   lookup key
-		org:              optional   multiple   inverse key
-		nic-hdl:          mandatory  single     primary/lookup key
-		remarks:          optional   multiple
-		notify:           optional   multiple   inverse key
-		mnt-by:           mandatory  multiple   inverse key
-		mnt-ref:          optional   multiple   inverse key
-		created:          generated  single
-		last-modified:    generated  single
-		source:           mandatory  single
+        address:          optional   multiple
+        phone:            optional   multiple
+        fax-no:           optional   multiple
+        e-mail:           mandatory  multiple   lookup key
+        contact:          optional   multiple
+        org:              optional   multiple   inverse key
+        nic-hdl:          mandatory  single     primary/lookup key
+        remarks:          optional   multiple
+        notify:           optional   multiple   inverse key
+        mnt-by:           mandatory  multiple   inverse key
+        mnt-ref:          optional   multiple   inverse key
+        created:          generated  single
+        last-modified:    generated  single
+        source:           mandatory  single
 	`
 
 	return ensureSchema(schema, "person", &o.Object, skipUnknownKeys, skipKeys)

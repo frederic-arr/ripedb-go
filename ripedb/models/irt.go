@@ -27,25 +27,26 @@ func (o Irt) Validate() error {
 
 func (o Irt) ValidateWithOptions(skipUnknownKeys bool, skipKeys []string) error {
 	schema := `
-        irt:            mandatory  single     primary/lookup key
-        address:        mandatory  multiple
-        phone:          optional   multiple
-        fax-no:         optional   multiple
-        e-mail:         mandatory  multiple   lookup key
-        signature:      optional   multiple
-        encryption:     optional   multiple
-        org:            optional   multiple   inverse key
-        admin-c:        mandatory  multiple   inverse key
-        tech-c:         mandatory  multiple   inverse key
-        auth:           mandatory  multiple   inverse key
-        remarks:        optional   multiple
-        irt-nfy:        optional   multiple   inverse key
-        notify:         optional   multiple   inverse key
-        mnt-by:         mandatory  multiple   inverse key
-        mnt-ref:        optional   multiple   inverse key
-        created:        generated  single
-        last-modified:  generated  single
-        source:         mandatory  single
+        irt:             mandatory  single     primary/lookup key
+        address:         mandatory  multiple
+        phone:           optional   multiple
+        fax-no:          optional   multiple
+        e-mail:          mandatory  multiple   lookup key
+        contact:         optional   multiple
+        signature:       optional   multiple
+        encryption:      optional   multiple
+        org:             optional   multiple   inverse key
+        admin-c:         mandatory  multiple   inverse key
+        tech-c:          mandatory  multiple   inverse key
+        auth:            mandatory  multiple   inverse key
+        remarks:         optional   multiple
+        irt-nfy:         optional   multiple   inverse key
+        notify:          optional   multiple   inverse key
+        mnt-by:          mandatory  multiple   inverse key
+        mnt-ref:         optional   multiple   inverse key
+        created:         generated  single
+        last-modified:   generated  single
+        source:          mandatory  single
 	`
 
 	return ensureSchema(schema, "irt", &o.Object, skipUnknownKeys, skipKeys)

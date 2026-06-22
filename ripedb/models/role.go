@@ -27,23 +27,24 @@ func (o Role) Validate() error {
 
 func (o Role) ValidateWithOptions(skipUnknownKeys bool, skipKeys []string) error {
 	schema := `
-        role:           mandatory  single     lookup key
-        address:        mandatory  multiple
-        phone:          optional   multiple
-        fax-no:         optional   multiple
-        e-mail:         mandatory  multiple   lookup key
-        org:            optional   multiple   inverse key
-        admin-c:        optional   multiple   inverse key
-        tech-c:         optional   multiple   inverse key
-        nic-hdl:        mandatory  single     primary/lookup key
-        remarks:        optional   multiple
-        notify:         optional   multiple   inverse key
-        abuse-mailbox:  optional   single     inverse key
-        mnt-by:         mandatory  multiple   inverse key
-        mnt-ref:        optional   multiple   inverse key
-        created:        generated  single
-        last-modified:  generated  single
-        source:         mandatory  single
+        role:           mandatory   single     lookup key
+        address:        optional    multiple
+        phone:          optional    multiple
+        fax-no:         optional    multiple
+        e-mail:         mandatory   multiple   lookup key
+        contact:        optional    multiple
+        org:            optional    multiple   inverse key
+        admin-c:        optional    multiple   inverse key
+        tech-c:         optional    multiple   inverse key
+        nic-hdl:        mandatory   single     primary/lookup key
+        remarks:        optional    multiple
+        notify:         optional    multiple   inverse key
+        abuse-mailbox:  conditional single     inverse key
+        mnt-by:         mandatory   multiple   inverse key
+        mnt-ref:        optional    multiple   inverse key
+        created:        generated   single
+        last-modified:  generated   single
+        source:         mandatory   single
 	`
 
 	return ensureSchema(schema, "role", &o.Object, skipUnknownKeys, skipKeys)

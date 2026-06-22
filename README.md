@@ -2,6 +2,9 @@
 
 This is a Go client for the RIPE Database RESTful Web Service API. It is a simple wrapper around the API, providing a more convenient way to interact with the RIPE Database.
 
+> [!IMPORTANT]
+> This library does not aim to fully validate that an object conforms to all of RIPEDB's rules. Instead, it focuses on checking that required keys are present, that no invalid keys exist, and giving a sane interface to interact with the database. See the [Restrictions](#restrictions) section for more information.
+
 ## Features
 
 - Generic resource queries
@@ -150,6 +153,12 @@ source:        RIPE # Filtered
 ```
 
 </details>
+
+## Restrictions
+
+- Conditional fields are treated as optional
+- Generated fields are treated as optional
+- No validation is performed on the actual value of the field: only its presence, absence, or arity is verified.
 
 ## License
 

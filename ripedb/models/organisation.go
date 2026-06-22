@@ -27,29 +27,31 @@ func (o Organisation) Validate() error {
 
 func (o Organisation) ValidateWithOptions(skipUnknownKeys bool, skipKeys []string) error {
 	schema := `
-        organisation:     mandatory  single     primary/lookup key
-        org-name:         mandatory  single     lookup key
-        org-type:         mandatory  single
-        descr:            optional   multiple
-        remarks:          optional   multiple
-        address:          mandatory  multiple
-        country:          optional   single
-        phone:            optional   multiple
-        fax-no:           optional   multiple
-        e-mail:           mandatory  multiple   lookup key
-        geoloc:           optional   single
-        language:         optional   multiple
-        org:              optional   multiple   inverse key
-        admin-c:          optional   multiple   inverse key
-        tech-c:           optional   multiple   inverse key
-        abuse-c:          optional   single     inverse key
-        ref-nfy:          optional   multiple   inverse key
-        mnt-ref:          mandatory  multiple   inverse key
-        notify:           optional   multiple   inverse key
-        mnt-by:           mandatory  multiple   inverse key
-        created:          generated  single
-        last-modified:    generated  single
-        source:           mandatory  single
+        organisation:     mandatory   single     primary/lookup key
+        org-name:         mandatory   single     lookup key
+        org-type:         mandatory   single
+        descr:            optional    multiple
+        remarks:          optional    multiple
+        address:          mandatory   multiple
+        country:          optional    single
+        phone:            conditional multiple
+        fax-no:           conditional multiple
+        e-mail:           mandatory   multiple   lookup key
+        contact:          optional    multiple
+        geoloc:           optional    single
+        language:         optional    multiple
+        reg-nr:           conditional single
+        org:              optional    multiple   inverse key
+        admin-c:          optional    multiple   inverse key
+        tech-c:           optional    multiple   inverse key
+        abuse-c:          conditional single     inverse key
+        ref-nfy:          optional    multiple   inverse key
+        mnt-ref:          mandatory   multiple   inverse key
+        notify:           optional    multiple   inverse key
+        mnt-by:           mandatory   multiple   inverse key
+        created:          generated   single
+        last-modified:    generated   single
+        source:           mandatory   single
 	`
 
 	return ensureSchema(schema, "organisation", &o.Object, skipUnknownKeys, skipKeys)
