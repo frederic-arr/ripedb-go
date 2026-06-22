@@ -264,7 +264,7 @@ func ensureSchema(schema string, class string, object *rpsl.Object, skipUnknownK
 
 	if !skipUnknownKeys {
 		for _, attr := range object.Attributes {
-			if slices.Contains(skipKeys, attr.Name) {
+			if slices.Contains(skipKeys, attr.Name) || attr.Name == "dry-run" {
 				continue
 			}
 
