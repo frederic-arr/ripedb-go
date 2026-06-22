@@ -229,12 +229,17 @@ func ensureSchema(schema string, class string, object *rpsl.Object, skipUnknownK
 
 		isMandatory := strings.Contains(line, " mandatory ")
 		isOptional := strings.Contains(line, " optional ")
+		isConditional := strings.Contains(line, " conditional ")
 		isGenerated := strings.Contains(line, " generated ")
 		isSingle := strings.Contains(line, "single")
 		isMultiple := strings.Contains(line, " multiple ")
 
 		parts := strings.SplitN(line, ":", 2)
 		attr := strings.TrimSpace(parts[0])
+
+		if !isMandatory && !isOptional && !isConditional && !isGenerated {
+			return fmt.Errorf("attribute %v in %v is neither mandatory, optional, conditional, nor generated", attr, class)
+		}
 
 		if slices.Contains(skipKeys, attr) {
 			keys[attr] = true
@@ -246,7 +251,7 @@ func ensureSchema(schema string, class string, object *rpsl.Object, skipUnknownK
 			err = object.EnsureOne(attr)
 		} else if isMandatory && isMultiple {
 			err = object.EnsureAtLeastOne(attr)
-		} else if (isOptional || isGenerated) && isSingle {
+		} else if (isOptional || isGenerated || isConditional) && isSingle {
 			err = object.EnsureAtMostOne(attr)
 		}
 
