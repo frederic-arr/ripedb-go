@@ -22,6 +22,10 @@ func (o AutNum) Key() string {
 }
 
 func (o AutNum) Validate() error {
+	return o.ValidateWithOptions(false, make([]string, 0))
+}
+
+func (o AutNum) ValidateWithOptions(skipUnknownKeys bool, skipKeys []string) error {
 	schema := `
         aut-num:         mandatory  single     primary/lookup
         as-name:         mandatory  single
@@ -49,12 +53,16 @@ func (o AutNum) Validate() error {
         source:          mandatory  single
 	`
 
-	return ensureSchema(schema, "aut-num", &o.Object)
+	return ensureSchema(schema, "aut-num", &o.Object, skipUnknownKeys, skipKeys)
 }
 
 func NewAutNum(object rpsl.Object) (*AutNum, error) {
+	return NewAutNumWithOptions(object, false, make([]string, 0))
+}
+
+func NewAutNumWithOptions(object rpsl.Object, skipUnknownKeys bool, skipKeys []string) (*AutNum, error) {
 	obj := NewAutNumUnchecked(object)
-	if err := obj.Validate(); err != nil {
+	if err := obj.ValidateWithOptions(skipUnknownKeys, skipKeys); err != nil {
 		return nil, err
 	}
 

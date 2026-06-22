@@ -22,6 +22,10 @@ func (o Organisation) Key() string {
 }
 
 func (o Organisation) Validate() error {
+	return o.ValidateWithOptions(false, make([]string, 0))
+}
+
+func (o Organisation) ValidateWithOptions(skipUnknownKeys bool, skipKeys []string) error {
 	schema := `
         organisation:     mandatory  single     primary/lookup key
         org-name:         mandatory  single     lookup key
@@ -48,12 +52,16 @@ func (o Organisation) Validate() error {
         source:           mandatory  single
 	`
 
-	return ensureSchema(schema, "organisation", &o.Object)
+	return ensureSchema(schema, "organisation", &o.Object, skipUnknownKeys, skipKeys)
 }
 
 func NewOrganisation(object rpsl.Object) (*Organisation, error) {
+	return NewOrganisationWithOptions(object, false, make([]string, 0))
+}
+
+func NewOrganisationWithOptions(object rpsl.Object, skipUnknownKeys bool, skipKeys []string) (*Organisation, error) {
 	obj := NewOrganisationUnchecked(object)
-	if err := obj.Validate(); err != nil {
+	if err := obj.ValidateWithOptions(skipUnknownKeys, skipKeys); err != nil {
 		return nil, err
 	}
 

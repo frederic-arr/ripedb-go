@@ -22,6 +22,10 @@ func (o FilterSet) Key() string {
 }
 
 func (o FilterSet) Validate() error {
+	return o.ValidateWithOptions(false, make([]string, 0))
+}
+
+func (o FilterSet) ValidateWithOptions(skipUnknownKeys bool, skipKeys []string) error {
 	schema := `
         filter-set:     mandatory  single     primary/lookup key
         descr:          optional   multiple
@@ -39,12 +43,16 @@ func (o FilterSet) Validate() error {
         source:         mandatory  single
 	`
 
-	return ensureSchema(schema, "filter-set", &o.Object)
+	return ensureSchema(schema, "filter-set", &o.Object, skipUnknownKeys, skipKeys)
 }
 
 func NewFilterSet(object rpsl.Object) (*FilterSet, error) {
+	return NewFilterSetWithOptions(object, false, make([]string, 0))
+}
+
+func NewFilterSetWithOptions(object rpsl.Object, skipUnknownKeys bool, skipKeys []string) (*FilterSet, error) {
 	obj := NewFilterSetUnchecked(object)
-	if err := obj.Validate(); err != nil {
+	if err := obj.ValidateWithOptions(skipUnknownKeys, skipKeys); err != nil {
 		return nil, err
 	}
 

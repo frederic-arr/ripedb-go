@@ -22,6 +22,10 @@ func (o AsBlock) Key() string {
 }
 
 func (o AsBlock) Validate() error {
+	return o.ValidateWithOptions(false, make([]string, 0))
+}
+
+func (o AsBlock) ValidateWithOptions(skipUnknownKeys bool, skipKeys []string) error {
 	schema := `
         as-block:       mandatory  single     primary/lookup
         descr:          optional   multiple
@@ -35,12 +39,16 @@ func (o AsBlock) Validate() error {
         source:         mandatory  single
 	`
 
-	return ensureSchema(schema, "as-block", &o.Object)
+	return ensureSchema(schema, "as-block", &o.Object, skipUnknownKeys, skipKeys)
 }
 
 func NewAsBlock(object rpsl.Object) (*AsBlock, error) {
+	return NewAsBlockWithOptions(object, false, make([]string, 0))
+}
+
+func NewAsBlockWithOptions(object rpsl.Object, skipUnknownKeys bool, skipKeys []string) (*AsBlock, error) {
 	obj := NewAsBlockUnchecked(object)
-	if err := obj.Validate(); err != nil {
+	if err := obj.ValidateWithOptions(skipUnknownKeys, skipKeys); err != nil {
 		return nil, err
 	}
 

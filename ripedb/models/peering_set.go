@@ -22,6 +22,10 @@ func (o PeeringSet) Key() string {
 }
 
 func (o PeeringSet) Validate() error {
+	return o.ValidateWithOptions(false, make([]string, 0))
+}
+
+func (o PeeringSet) ValidateWithOptions(skipUnknownKeys bool, skipKeys []string) error {
 	schema := `
         peering-set:     mandatory  single     primary/lookup key
         descr:           optional   multiple
@@ -39,12 +43,16 @@ func (o PeeringSet) Validate() error {
         source:          mandatory  single
 	`
 
-	return ensureSchema(schema, "peering-set", &o.Object)
+	return ensureSchema(schema, "peering-set", &o.Object, skipUnknownKeys, skipKeys)
 }
 
 func NewPeeringSet(object rpsl.Object) (*PeeringSet, error) {
+	return NewPeeringSetWithOptions(object, false, make([]string, 0))
+}
+
+func NewPeeringSetWithOptions(object rpsl.Object, skipUnknownKeys bool, skipKeys []string) (*PeeringSet, error) {
 	obj := NewPeeringSetUnchecked(object)
-	if err := obj.Validate(); err != nil {
+	if err := obj.ValidateWithOptions(skipUnknownKeys, skipKeys); err != nil {
 		return nil, err
 	}
 

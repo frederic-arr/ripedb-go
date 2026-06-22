@@ -22,6 +22,10 @@ func (o Irt) Key() string {
 }
 
 func (o Irt) Validate() error {
+	return o.ValidateWithOptions(false, make([]string, 0))
+}
+
+func (o Irt) ValidateWithOptions(skipUnknownKeys bool, skipKeys []string) error {
 	schema := `
         irt:            mandatory  single     primary/lookup key
         address:        mandatory  multiple
@@ -44,12 +48,16 @@ func (o Irt) Validate() error {
         source:         mandatory  single
 	`
 
-	return ensureSchema(schema, "irt", &o.Object)
+	return ensureSchema(schema, "irt", &o.Object, skipUnknownKeys, skipKeys)
 }
 
 func NewIrt(object rpsl.Object) (*Irt, error) {
+	return NewIrtWithOptions(object, false, make([]string, 0))
+}
+
+func NewIrtWithOptions(object rpsl.Object, skipUnknownKeys bool, skipKeys []string) (*Irt, error) {
 	obj := NewIrtUnchecked(object)
-	if err := obj.Validate(); err != nil {
+	if err := obj.ValidateWithOptions(skipUnknownKeys, skipKeys); err != nil {
 		return nil, err
 	}
 

@@ -22,6 +22,10 @@ func (o KeyCert) Key() string {
 }
 
 func (o KeyCert) Validate() error {
+	return o.ValidateWithOptions(false, make([]string, 0))
+}
+
+func (o KeyCert) ValidateWithOptions(skipUnknownKeys bool, skipKeys []string) error {
 	schema := `
         key-cert:       mandatory  single     primary/lookup key
         method:         generated  single
@@ -39,12 +43,16 @@ func (o KeyCert) Validate() error {
         source:         mandatory  single
 	`
 
-	return ensureSchema(schema, "key-cert", &o.Object)
+	return ensureSchema(schema, "key-cert", &o.Object, skipUnknownKeys, skipKeys)
 }
 
 func NewKeyCert(object rpsl.Object) (*KeyCert, error) {
+	return NewKeyCertWithOptions(object, false, make([]string, 0))
+}
+
+func NewKeyCertWithOptions(object rpsl.Object, skipUnknownKeys bool, skipKeys []string) (*KeyCert, error) {
 	obj := NewKeyCertUnchecked(object)
-	if err := obj.Validate(); err != nil {
+	if err := obj.ValidateWithOptions(skipUnknownKeys, skipKeys); err != nil {
 		return nil, err
 	}
 

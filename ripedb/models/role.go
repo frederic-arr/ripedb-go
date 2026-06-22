@@ -22,6 +22,10 @@ func (o Role) Key() string {
 }
 
 func (o Role) Validate() error {
+	return o.ValidateWithOptions(false, make([]string, 0))
+}
+
+func (o Role) ValidateWithOptions(skipUnknownKeys bool, skipKeys []string) error {
 	schema := `
         role:           mandatory  single     lookup key
         address:        mandatory  multiple
@@ -42,12 +46,16 @@ func (o Role) Validate() error {
         source:         mandatory  single
 	`
 
-	return ensureSchema(schema, "role", &o.Object)
+	return ensureSchema(schema, "role", &o.Object, skipUnknownKeys, skipKeys)
 }
 
 func NewRole(object rpsl.Object) (*Role, error) {
+	return NewRoleWithOptions(object, false, make([]string, 0))
+}
+
+func NewRoleWithOptions(object rpsl.Object, skipUnknownKeys bool, skipKeys []string) (*Role, error) {
 	obj := NewRoleUnchecked(object)
-	if err := obj.Validate(); err != nil {
+	if err := obj.ValidateWithOptions(skipUnknownKeys, skipKeys); err != nil {
 		return nil, err
 	}
 

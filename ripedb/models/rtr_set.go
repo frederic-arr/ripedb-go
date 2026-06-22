@@ -22,6 +22,10 @@ func (o RtrSet) Key() string {
 }
 
 func (o RtrSet) Validate() error {
+	return o.ValidateWithOptions(false, make([]string, 0))
+}
+
+func (o RtrSet) ValidateWithOptions(skipUnknownKeys bool, skipKeys []string) error {
 	schema := `
         rtr-set:        mandatory  single     primary/lookup key
         descr:          optional   multiple
@@ -40,12 +44,16 @@ func (o RtrSet) Validate() error {
         source:         mandatory  single
 	`
 
-	return ensureSchema(schema, "rtr-set", &o.Object)
+	return ensureSchema(schema, "rtr-set", &o.Object, skipUnknownKeys, skipKeys)
 }
 
 func NewRtrSet(object rpsl.Object) (*RtrSet, error) {
+	return NewRtrSetWithOptions(object, false, make([]string, 0))
+}
+
+func NewRtrSetWithOptions(object rpsl.Object, skipUnknownKeys bool, skipKeys []string) (*RtrSet, error) {
 	obj := NewRtrSetUnchecked(object)
-	if err := obj.Validate(); err != nil {
+	if err := obj.ValidateWithOptions(skipUnknownKeys, skipKeys); err != nil {
 		return nil, err
 	}
 
