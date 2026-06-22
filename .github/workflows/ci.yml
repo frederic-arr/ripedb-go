@@ -60,8 +60,8 @@ jobs:
         if: (github.event_name != 'schedule' && steps.restore-cache.outputs.cache-hit != 'true') || github.event_name == 'schedule'
         run: scripts/download-dumps.sh
 
-      - name: Save fresh test data cache (weekly)
-        if: github.event_name == 'schedule'
+      - name: Save test data cache
+        if: github.event_name == 'schedule' || (github.event_name != 'schedule' && steps.restore-cache.outputs.cache-hit != 'true')
         uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ripedb/tests/data
