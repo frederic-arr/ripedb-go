@@ -50,6 +50,7 @@ jobs:
         run: go mod tidy
 
       - name: Restore test data cache
+        id: restore-cache
         if: github.event_name != 'schedule'
         uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
