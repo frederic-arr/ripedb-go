@@ -259,6 +259,10 @@ func ensureSchema(schema string, class string, object *rpsl.Object, skipUnknownK
 
 	if !skipUnknownKeys {
 		for _, attr := range object.Attributes {
+			if slices.Contains(skipKeys, attr.Name) {
+				continue
+			}
+
 			if _, ok := keys[attr.Name]; !ok {
 				return fmt.Errorf("attribute %s not found in schema", attr.Name)
 			}
