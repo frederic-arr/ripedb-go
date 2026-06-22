@@ -27,30 +27,30 @@ func (o AutNum) Validate() error {
 
 func (o AutNum) ValidateWithOptions(skipUnknownKeys bool, skipKeys []string) error {
 	schema := `
-        aut-num:         mandatory  single     primary/lookup
-        as-name:         mandatory  single
-        descr:           optional   multiple
-        member-of:       optional   multiple   inverse
-        import-via:      optional   multiple
-        import:          optional   multiple
-        mp-import:       optional   multiple
-        export-via:      optional   multiple
-        export:          optional   multiple
-        mp-export:       optional   multiple
-        default:         optional   multiple
-        mp-default:      optional   multiple
-        remarks:         optional   multiple
-        org:             optional   single     inverse
-        sponsoring-org:  optional   single     inverse
-        admin-c:         mandatory  multiple   inverse
-        tech-c:          mandatory  multiple   inverse
-        abuse-c:         optional   single     inverse
-        status:          generated  single
-        notify:          optional   multiple   inverse
-        mnt-by:          mandatory  multiple   inverse
-        created:         generated  single
-        last-modified:   generated  single
-        source:          mandatory  single
+        aut-num:         mandatory   single     primary/lookup
+        as-name:         mandatory   single
+        descr:           optional    multiple
+        member-of:       optional    multiple   inverse
+        import-via:      optional    multiple
+        import:          optional    multiple
+        mp-import:       optional    multiple
+        export-via:      optional    multiple
+        export:          optional    multiple
+        mp-export:       optional    multiple
+        default:         optional    multiple
+        mp-default:      optional    multiple
+        remarks:         optional    multiple
+        org:             conditional single     inverse
+        sponsoring-org:  conditional single     inverse
+        admin-c:         mandatory   multiple   inverse
+        tech-c:          mandatory   multiple   inverse
+        abuse-c:         optional    single     inverse
+        status:          generated   single
+        notify:          optional    multiple   inverse
+        mnt-by:          mandatory   multiple   inverse
+        created:         generated   single
+        last-modified:   generated   single
+        source:          mandatory   single
 	`
 
 	return ensureSchema(schema, "aut-num", &o.Object, skipUnknownKeys, skipKeys)

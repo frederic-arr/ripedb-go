@@ -27,20 +27,20 @@ func (o FilterSet) Validate() error {
 
 func (o FilterSet) ValidateWithOptions(skipUnknownKeys bool, skipKeys []string) error {
 	schema := `
-        filter-set:     mandatory  single     primary/lookup key
-        descr:          optional   multiple
-        filter:         optional   single
-        mp-filter:      optional   single
-        remarks:        optional   multiple
-        org:            optional   multiple   inverse key
-        tech-c:         mandatory  multiple   inverse key
-        admin-c:        mandatory  multiple   inverse key
-        notify:         optional   multiple   inverse key
-        mnt-by:         mandatory  multiple   inverse key
-        mnt-lower:      optional   multiple   inverse key
-        created:        generated  single
-        last-modified:  generated  single
-        source:         mandatory  single
+        filter-set:     mandatory   single     primary/lookup key
+        descr:          optional    multiple
+        filter:         conditional single
+        mp-filter:      conditional single
+        remarks:        optional    multiple
+        org:            optional    multiple   inverse key
+        tech-c:         mandatory   multiple   inverse key
+        admin-c:        mandatory   multiple   inverse key
+        notify:         optional    multiple   inverse key
+        mnt-by:         mandatory   multiple   inverse key
+        mnt-lower:      optional    multiple   inverse key
+        created:        generated   single
+        last-modified:  generated   single
+        source:         mandatory   single
 	`
 
 	return ensureSchema(schema, "filter-set", &o.Object, skipUnknownKeys, skipKeys)
