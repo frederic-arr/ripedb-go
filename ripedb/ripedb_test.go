@@ -31,7 +31,11 @@ func TestIntegration(t *testing.T) {
 			if err != nil {
 				t.Fatalf("unable to read file: %v", err)
 			}
-			defer data.Close()
+			defer func() {
+				if err := data.Close(); err != nil {
+					t.Fatalf("failed to close file: %v", err)
+				}
+			}()
 
 			reader := rpsl.NewReader(data)
 
