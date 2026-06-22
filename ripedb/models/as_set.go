@@ -22,6 +22,10 @@ func (o AsSet) Key() string {
 }
 
 func (o AsSet) Validate() error {
+	return o.ValidateWithOptions(false, make([]string, 0))
+}
+
+func (o AsSet) ValidateWithOptions(skipUnknownKeys bool, skipKeys []string) error {
 	schema := `
         as-set:         mandatory  single     primary/lookup key
         descr:          optional   multiple
@@ -39,12 +43,16 @@ func (o AsSet) Validate() error {
         source:         mandatory  single
 	`
 
-	return ensureSchema(schema, "as-set", &o.Object)
+	return ensureSchema(schema, "as-set", &o.Object, skipUnknownKeys, skipKeys)
 }
 
 func NewAsSet(object rpsl.Object) (*AsSet, error) {
+	return NewAsSetWithOptions(object, false, make([]string, 0))
+}
+
+func NewAsSetWithOptions(object rpsl.Object, skipUnknownKeys bool, skipKeys []string) (*AsSet, error) {
 	obj := NewAsSetUnchecked(object)
-	if err := obj.Validate(); err != nil {
+	if err := obj.ValidateWithOptions(skipUnknownKeys, skipKeys); err != nil {
 		return nil, err
 	}
 

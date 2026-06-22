@@ -5,6 +5,7 @@ package models
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/frederic-arr/rpsl-go"
@@ -210,7 +211,7 @@ func NewResourceFromRpslObject(o *rpsl.Object) Resource {
 	return NewResourceFromObject(&obj)
 }
 
-func ensureSchema(schema string, class string, object *rpsl.Object) error {
+func ensureSchema(schema string, class string, object *rpsl.Object, skipUnknownKeys bool, skipKeys []string) error {
 	err := object.EnsureClass(class)
 	if err != nil {
 		return err
@@ -235,6 +236,11 @@ func ensureSchema(schema string, class string, object *rpsl.Object) error {
 		parts := strings.SplitN(line, ":", 2)
 		attr := strings.TrimSpace(parts[0])
 
+		if slices.Contains(skipKeys, attr) {
+			keys[attr] = true
+			continue
+		}
+
 		var err error
 		if isMandatory && isSingle {
 			err = object.EnsureOne(attr)
@@ -251,9 +257,11 @@ func ensureSchema(schema string, class string, object *rpsl.Object) error {
 		}
 	}
 
-	for _, attr := range object.Attributes {
-		if _, ok := keys[attr.Name]; !ok {
-			return fmt.Errorf("attribute %s not found in schema", attr.Name)
+	if !skipUnknownKeys {
+		for _, attr := range object.Attributes {
+			if _, ok := keys[attr.Name]; !ok {
+				return fmt.Errorf("attribute %s not found in schema", attr.Name)
+			}
 		}
 	}
 

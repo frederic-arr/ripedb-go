@@ -22,6 +22,10 @@ func (o Mntner) Key() string {
 }
 
 func (o Mntner) Validate() error {
+	return o.ValidateWithOptions(false, make([]string, 0))
+}
+
+func (o Mntner) ValidateWithOptions(skipUnknownKeys bool, skipKeys []string) error {
 	schema := `
         mntner:         mandatory  single     primary/lookup key
         descr:          optional   multiple
@@ -40,12 +44,16 @@ func (o Mntner) Validate() error {
         source:         mandatory  single
 	`
 
-	return ensureSchema(schema, "mntner", &o.Object)
+	return ensureSchema(schema, "mntner", &o.Object, skipUnknownKeys, skipKeys)
 }
 
 func NewMntner(object rpsl.Object) (*Mntner, error) {
+	return NewMntnerWithOptions(object, false, make([]string, 0))
+}
+
+func NewMntnerWithOptions(object rpsl.Object, skipUnknownKeys bool, skipKeys []string) (*Mntner, error) {
 	obj := NewMntnerUnchecked(object)
-	if err := obj.Validate(); err != nil {
+	if err := obj.ValidateWithOptions(skipUnknownKeys, skipKeys); err != nil {
 		return nil, err
 	}
 

@@ -10,6 +10,7 @@ type Model interface {
 	Class() string
 	Key() string
 	Validate() error
+	ValidateWithOptions(skipUnknownKeys bool, skipKeys []string) error
 }
 
 func ObjectToModelUnchecked(resource string, object rpsl.Object) Model {
@@ -59,9 +60,13 @@ func ObjectToModelUnchecked(resource string, object rpsl.Object) Model {
 }
 
 func ObjectToModel(resource string, object rpsl.Object) (Model, error) {
+	return ObjectToModelWithOptions(resource, object, false, []string{})
+}
+
+func ObjectToModelWithOptions(resource string, object rpsl.Object, skipUnknownKeys bool, skipKeys []string) (Model, error) {
 	m := ObjectToModelUnchecked(resource, object)
 
-	err := m.Validate()
+	err := m.ValidateWithOptions(skipUnknownKeys, skipKeys)
 	if err != nil {
 		return nil, err
 	}
@@ -70,11 +75,19 @@ func ObjectToModel(resource string, object rpsl.Object) (Model, error) {
 }
 
 func ValidateObject(resource string, object rpsl.Object) error {
-	_, err := ObjectToModel(resource, object)
+	return ValidateObjectWithOptions(resource, object, false, []string{})
+}
+
+func ValidateObjectWithOptions(resource string, object rpsl.Object, skipUnknownKeys bool, skipKeys []string) error {
+	_, err := ObjectToModelWithOptions(resource, object, skipUnknownKeys, skipKeys)
 	return err
 }
 
 func ValidateResource(resource string, data Resource) error {
+	return ValidateResourceWithOptions(resource, data, false, []string{})
+}
+
+func ValidateResourceWithOptions(resource string, data Resource, skipUnknownKeys bool, skipKeys []string) error {
 	if len(data.Objects.Object) != 1 {
 		return fmt.Errorf("no object found")
 	}
@@ -84,5 +97,5 @@ func ValidateResource(resource string, data Resource) error {
 		return err
 	}
 
-	return ValidateObject(resource, *obj)
+	return ValidateObjectWithOptions(resource, *obj, skipUnknownKeys, skipKeys)
 }

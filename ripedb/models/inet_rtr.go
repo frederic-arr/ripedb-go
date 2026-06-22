@@ -22,6 +22,10 @@ func (o InetRtr) Key() string {
 }
 
 func (o InetRtr) Validate() error {
+	return o.ValidateWithOptions(false, make([]string, 0))
+}
+
+func (o InetRtr) ValidateWithOptions(skipUnknownKeys bool, skipKeys []string) error {
 	schema := `
         inet-rtr:       mandatory    single       primary/lookup key
         descr:          optional     multiple
@@ -43,12 +47,16 @@ func (o InetRtr) Validate() error {
         source:         mandatory    single
 	`
 
-	return ensureSchema(schema, "inet-rtr", &o.Object)
+	return ensureSchema(schema, "inet-rtr", &o.Object, skipUnknownKeys, skipKeys)
 }
 
 func NewInetRtr(object rpsl.Object) (*InetRtr, error) {
+	return NewInetRtrWithOptions(object, false, make([]string, 0))
+}
+
+func NewInetRtrWithOptions(object rpsl.Object, skipUnknownKeys bool, skipKeys []string) (*InetRtr, error) {
 	obj := NewInetRtrUnchecked(object)
-	if err := obj.Validate(); err != nil {
+	if err := obj.ValidateWithOptions(skipUnknownKeys, skipKeys); err != nil {
 		return nil, err
 	}
 

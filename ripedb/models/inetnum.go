@@ -22,6 +22,10 @@ func (o InetNum) Key() string {
 }
 
 func (o InetNum) Validate() error {
+	return o.ValidateWithOptions(false, make([]string, 0))
+}
+
+func (o InetNum) ValidateWithOptions(skipUnknownKeys bool, skipKeys []string) error {
 	schema := `
         inetnum:          mandatory  single     primary/lookup key
         netname:          mandatory  single     lookup key
@@ -49,12 +53,16 @@ func (o InetNum) Validate() error {
         source:           mandatory  single
 	`
 
-	return ensureSchema(schema, "inetnum", &o.Object)
+	return ensureSchema(schema, "inetnum", &o.Object, skipUnknownKeys, skipKeys)
 }
 
 func NewInetNum(object rpsl.Object) (*InetNum, error) {
+	return NewInetNumWithOptions(object, false, make([]string, 0))
+}
+
+func NewInetNumWithOptions(object rpsl.Object, skipUnknownKeys bool, skipKeys []string) (*InetNum, error) {
 	obj := NewInetNumUnchecked(object)
-	if err := obj.Validate(); err != nil {
+	if err := obj.ValidateWithOptions(skipUnknownKeys, skipKeys); err != nil {
 		return nil, err
 	}
 

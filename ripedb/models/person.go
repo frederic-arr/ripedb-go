@@ -22,6 +22,10 @@ func (o Person) Key() string {
 }
 
 func (o Person) Validate() error {
+	return o.ValidateWithOptions(false, make([]string, 0))
+}
+
+func (o Person) ValidateWithOptions(skipUnknownKeys bool, skipKeys []string) error {
 	schema := `
 		person:           mandatory  single     lookup key
 		address:          mandatory  multiple
@@ -39,12 +43,16 @@ func (o Person) Validate() error {
 		source:           mandatory  single
 	`
 
-	return ensureSchema(schema, "person", &o.Object)
+	return ensureSchema(schema, "person", &o.Object, skipUnknownKeys, skipKeys)
 }
 
 func NewPerson(object rpsl.Object) (*Person, error) {
+	return NewPersonWithOptions(object, false, make([]string, 0))
+}
+
+func NewPersonWithOptions(object rpsl.Object, skipUnknownKeys bool, skipKeys []string) (*Person, error) {
 	obj := NewPersonUnchecked(object)
-	if err := obj.Validate(); err != nil {
+	if err := obj.ValidateWithOptions(skipUnknownKeys, skipKeys); err != nil {
 		return nil, err
 	}
 

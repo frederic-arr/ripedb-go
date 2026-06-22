@@ -22,6 +22,10 @@ func (o Domain) Key() string {
 }
 
 func (o Domain) Validate() error {
+	return o.ValidateWithOptions(false, make([]string, 0))
+}
+
+func (o Domain) ValidateWithOptions(skipUnknownKeys bool, skipKeys []string) error {
 	schema := `
         domain:           mandatory      single       primary/lookup
         descr:            optional       multiple
@@ -39,12 +43,16 @@ func (o Domain) Validate() error {
         source:           mandatory      single
 	`
 
-	return ensureSchema(schema, "domain", &o.Object)
+	return ensureSchema(schema, "domain", &o.Object, skipUnknownKeys, skipKeys)
 }
 
 func NewDomain(object rpsl.Object) (*Domain, error) {
+	return NewDomainWithOptions(object, false, make([]string, 0))
+}
+
+func NewDomainWithOptions(object rpsl.Object, skipUnknownKeys bool, skipKeys []string) (*Domain, error) {
 	obj := NewDomainUnchecked(object)
-	if err := obj.Validate(); err != nil {
+	if err := obj.ValidateWithOptions(skipUnknownKeys, skipKeys); err != nil {
 		return nil, err
 	}
 

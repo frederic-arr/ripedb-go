@@ -22,6 +22,10 @@ func (o RouteSet) Key() string {
 }
 
 func (o RouteSet) Validate() error {
+	return o.ValidateWithOptions(false, make([]string, 0))
+}
+
+func (o RouteSet) ValidateWithOptions(skipUnknownKeys bool, skipKeys []string) error {
 	schema := `
         route-set:      mandatory  single     primary/lookup key
         descr:          optional   multiple
@@ -40,12 +44,16 @@ func (o RouteSet) Validate() error {
         source:         mandatory  single
 	`
 
-	return ensureSchema(schema, "route-set", &o.Object)
+	return ensureSchema(schema, "route-set", &o.Object, skipUnknownKeys, skipKeys)
 }
 
 func NewRouteSet(object rpsl.Object) (*RouteSet, error) {
+	return NewRouteSetWithOptions(object, false, make([]string, 0))
+}
+
+func NewRouteSetWithOptions(object rpsl.Object, skipUnknownKeys bool, skipKeys []string) (*RouteSet, error) {
 	obj := NewRouteSetUnchecked(object)
-	if err := obj.Validate(); err != nil {
+	if err := obj.ValidateWithOptions(skipUnknownKeys, skipKeys); err != nil {
 		return nil, err
 	}
 
