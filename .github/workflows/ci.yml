@@ -13,6 +13,8 @@ on:
   push:
     paths-ignore:
       - "README.md"
+  schedule:
+    - cron: "0 13 * * 5"
 
 permissions:
   contents: read
@@ -46,6 +48,24 @@ jobs:
 
       - name: Install dependencies
         run: go mod tidy
+
+      - name: Restore test data cache
+        if: github.event_name != 'schedule'
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ripedb/tests/data
+          key: tests-data-${{ hashFiles('scripts/download-dumps.sh') }}
+
+      - name: Download test data
+        if: (github.event_name != 'schedule' && steps.restore-cache.outputs.cache-hit != 'true') || github.event_name == 'schedule'
+        run: scripts/download-dumps.sh
+
+      - name: Save fresh test data cache (weekly)
+        if: github.event_name == 'schedule'
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ripedb/tests/data
+          key: tests-data-${{ hashFiles('scripts/download-dumps.sh') }}
 
       - name: Run tests
         run: go test ./...
