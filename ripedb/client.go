@@ -209,8 +209,12 @@ func (c *RipeClient) GetObject(resource string, key string) (*rpsl.Object, error
 }
 
 func (c *RipeClient) CreateObject(resource string, object *rpsl.Object) (*rpsl.Object, error) {
+	return c.CreateObjectWithOptions(resource, object, c.GetSkipValidation(), c.GetSkipUnknownKeys(), c.GetSkipKeys())
+}
+
+func (c *RipeClient) CreateObjectWithOptions(resource string, object *rpsl.Object, skipValidation bool, skipUnknownKeys bool, skipKeys []string) (*rpsl.Object, error) {
 	data := models.NewResourceFromRpslObject(object)
-	res, err := c.PostResource(resource, data)
+	res, err := c.PostResourceWithOptions(resource, data, skipValidation, skipUnknownKeys, skipKeys)
 	if err != nil {
 		return nil, err
 	}
@@ -222,9 +226,14 @@ func (c *RipeClient) CreateObject(resource string, object *rpsl.Object) (*rpsl.O
 
 	return models.ModelObjectToRpslObject(obj)
 }
+
 func (c *RipeClient) UpdateObject(resource string, key string, object *rpsl.Object) (*rpsl.Object, error) {
+	return c.UpdateObjectWithOptions(resource, key, object, c.GetSkipValidation(), c.GetSkipUnknownKeys(), c.GetSkipKeys())
+}
+
+func (c *RipeClient) UpdateObjectWithOptions(resource string, key string, object *rpsl.Object, skipValidation bool, skipUnknownKeys bool, skipKeys []string) (*rpsl.Object, error) {
 	data := models.NewResourceFromRpslObject(object)
-	res, err := c.PutResource(resource, key, data)
+	res, err := c.PutResourceWithOptions(resource, key, data, skipValidation, skipUnknownKeys, skipKeys)
 	if err != nil {
 		return nil, err
 	}
@@ -255,12 +264,16 @@ func (c *RipeClient) GetResource(resource string, key string) (*models.Resource,
 }
 
 func (c *RipeClient) PostResource(resource string, data models.Resource) (*models.Resource, error) {
-	skipKeys := []string{"created", "last-modified", "dry-run"}
-	data.RemoveKeys(skipKeys)
+	return c.PostResourceWithOptions(resource, data, c.GetSkipValidation(), c.GetSkipUnknownKeys(), c.GetSkipKeys())
+}
 
-	if !c.GetSkipValidation() {
-		skipKeys = append(skipKeys, c.GetSkipKeys()...)
-		err := models.ValidateResourceWithOptions(resource, data, c.GetSkipUnknownKeys(), skipKeys)
+func (c *RipeClient) PostResourceWithOptions(resource string, data models.Resource, skipValidation bool, skipUnknownKeys bool, skipKeys []string) (*models.Resource, error) {
+	generatedKeys := []string{"created", "last-modified", "dry-run"}
+	data.RemoveKeys(generatedKeys)
+
+	if !skipValidation {
+		skipKeys = append(skipKeys, generatedKeys...)
+		err := models.ValidateResourceWithOptions(resource, data, skipUnknownKeys, skipKeys)
 		if err != nil {
 			return nil, err
 		}
@@ -275,12 +288,16 @@ func (c *RipeClient) PostResource(resource string, data models.Resource) (*model
 }
 
 func (c *RipeClient) PutResource(resource string, key string, data models.Resource) (*models.Resource, error) {
-	skipKeys := []string{"created", "last-modified", "dry-run"}
-	data.RemoveKeys(skipKeys)
+	return c.PutResourceWithOptions(resource, key, data, c.GetSkipValidation(), c.GetSkipUnknownKeys(), c.GetSkipKeys())
+}
 
-	if !c.GetSkipValidation() {
-		skipKeys = append(skipKeys, c.GetSkipKeys()...)
-		err := models.ValidateResourceWithOptions(resource, data, c.GetSkipUnknownKeys(), skipKeys)
+func (c *RipeClient) PutResourceWithOptions(resource string, key string, data models.Resource, skipValidation bool, skipUnknownKeys bool, skipKeys []string) (*models.Resource, error) {
+	generatedKeys := []string{"created", "last-modified", "dry-run"}
+	data.RemoveKeys(generatedKeys)
+
+	if !skipValidation {
+		skipKeys = append(skipKeys, generatedKeys...)
+		err := models.ValidateResourceWithOptions(resource, data, skipUnknownKeys, skipKeys)
 		if err != nil {
 			return nil, err
 		}
