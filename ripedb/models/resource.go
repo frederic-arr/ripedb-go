@@ -160,6 +160,26 @@ func (m *Resource) FindOne() (*Object, error) {
 	return &m.Objects.Object[0], nil
 }
 
+func (m *Resource) RemoveKeys(keys []string) {
+	keySet := make(map[string]struct{}, len(keys))
+	for _, k := range keys {
+		keySet[k] = struct{}{}
+	}
+
+	for i := range m.Objects.Object {
+		obj := &m.Objects.Object[i]
+		attrs := obj.Attributes.Attribute
+
+		filtered := make([]Attribute, 0, len(attrs))
+		for _, attr := range attrs {
+			if _, found := keySet[attr.Name]; !found {
+				filtered = append(filtered, attr)
+			}
+		}
+		obj.Attributes.Attribute = filtered
+	}
+}
+
 func ModelObjectToRpslObject(m *Object) (*rpsl.Object, error) {
 	obj := rpsl.Object{
 		Attributes: make([]rpsl.Attribute, len(m.Attributes.Attribute)),

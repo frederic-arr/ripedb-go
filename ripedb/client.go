@@ -28,7 +28,7 @@ type RipeClientOptions struct {
 	Filter *bool
 
 	// If set to `true`, L7 errors (HTTP or RIPE) are not handled
-	NoError *bool
+	IgnoreError *bool
 
 	// API key for the basic authentication protocol.
 	// You cannot use API key Authentication along with any other authentication protocol.
@@ -56,15 +56,35 @@ type RipeClientOptions struct {
 	// provided. The `endpoint` field must be set appropriately if you are not using the default production
 	// API. You cannot use X.509 Client Authentication and Basic authentication at the same time.
 	Key *[]byte
+
+	// Exit with an error if any warning message is encountered.
+	ExitOnWarning *bool
+
+	// Exit with an error if any info message is encountered.
+	ExitOnInfo *bool
+
+	// Exit with an error if any unknown severity message is encountered.
+	ExitOnUnknown *bool
+
+	// Performs a dry run.
+	DryRun *bool
+
+	// Disables color in the terminal
+	NoColor *bool
 }
 
 type ripeClientOptions struct {
-	Endpoint  string
-	Format    bool
-	Filter    bool
-	NoError   bool
-	Source    string
-	UserAgent string
+	Endpoint      string
+	Format        bool
+	Filter        bool
+	IgnoreError   bool
+	Source        string
+	UserAgent     string
+	ExitOnWarning bool
+	ExitOnInfo    bool
+	ExitOnUnknown bool
+	DryRun        bool
+	NoColor       bool
 }
 
 type RipeClient struct {
@@ -88,12 +108,32 @@ func (c *RipeClient) GetFormat() bool {
 	return c.opts.Format
 }
 
-func (c *RipeClient) GetNoError() bool {
-	return c.opts.NoError
+func (c *RipeClient) GetIgnoreError() bool {
+	return c.opts.IgnoreError
 }
 
 func (c *RipeClient) GetUserAgent() string {
 	return c.opts.UserAgent
+}
+
+func (c *RipeClient) GetExitOnWarning() bool {
+	return c.opts.ExitOnWarning
+}
+
+func (c *RipeClient) GetExitOnInfo() bool {
+	return c.opts.ExitOnInfo
+}
+
+func (c *RipeClient) GetExitOnUnknown() bool {
+	return c.opts.ExitOnUnknown
+}
+
+func (c *RipeClient) GetDryRun() bool {
+	return c.opts.DryRun
+}
+
+func (c *RipeClient) GetNoColor() bool {
+	return c.opts.NoColor
 }
 
 func (c *RipeClient) SetEndpoint(endpoint string) {
@@ -112,12 +152,32 @@ func (c *RipeClient) SetFormat(format bool) {
 	c.opts.Format = format
 }
 
-func (c *RipeClient) SetNoError(noError bool) {
-	c.opts.NoError = noError
+func (c *RipeClient) SetignoreError(ignoreError bool) {
+	c.opts.IgnoreError = ignoreError
 }
 
 func (c *RipeClient) SetUserAgent(userAgent string) {
 	c.opts.UserAgent = userAgent
+}
+
+func (c *RipeClient) SetExitOnWarning(exitOnWarning bool) {
+	c.opts.ExitOnWarning = exitOnWarning
+}
+
+func (c *RipeClient) SetExitOnInfo(exitOnInfo bool) {
+	c.opts.ExitOnInfo = exitOnInfo
+}
+
+func (c *RipeClient) SetExitOnUnknown(exitOnUnknown bool) {
+	c.opts.ExitOnUnknown = exitOnUnknown
+}
+
+func (c *RipeClient) SetDryRun(dryRun bool) {
+	c.opts.DryRun = dryRun
+}
+
+func (c *RipeClient) SetNoColor(noColor bool) {
+	c.opts.NoColor = noColor
 }
 
 func (c *RipeClient) GetObject(resource string, key string) (*rpsl.Object, error) {
@@ -181,7 +241,10 @@ func (c *RipeClient) GetResource(resource string, key string) (*models.Resource,
 }
 
 func (c *RipeClient) PostResource(resource string, data models.Resource) (*models.Resource, error) {
-	err := models.ValidateResource(resource, data)
+	timestampKeys := []string{"created", "last-modified", "dry-run"}
+	data.RemoveKeys(timestampKeys)
+
+	err := models.ValidateResourceWithOptions(resource, data, false, timestampKeys)
 	if err != nil {
 		return nil, err
 	}
@@ -195,7 +258,10 @@ func (c *RipeClient) PostResource(resource string, data models.Resource) (*model
 }
 
 func (c *RipeClient) PutResource(resource string, key string, data models.Resource) (*models.Resource, error) {
-	err := models.ValidateResource(resource, data)
+	timestampKeys := []string{"created", "last-modified", "dry-run"}
+	data.RemoveKeys(timestampKeys)
+
+	err := models.ValidateResourceWithOptions(resource, data, false, timestampKeys)
 	if err != nil {
 		return nil, err
 	}
