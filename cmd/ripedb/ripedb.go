@@ -21,8 +21,6 @@ type Context struct {
 
 var CLI struct {
 	Debug         bool    `env:"RIPEDB_DEBUG" help:"Enable debug mode."`
-	User          *string `env:"RIPEDB_USER" help:"(DEPRECATED) The user to use for authentication."`
-	Password      *string `env:"RIPEDB_PASSWORD" help:"(DEPRECATED) The password to use for authentication."`
 	ApiKey        *string `env:"RIPEDB_APIKEY" help:"The API key to use for authentication."`
 	Key           *string `env:"RIPEDB_KEYFILE" help:"The key to use for authentication."`
 	Cert          *string `env:"RIPEDB_CERTFILE" help:"The certificate to use for authentication."`
@@ -212,8 +210,6 @@ func main() {
 		Endpoint:      CLI.Endpoint,
 		Source:        CLI.Source,
 		UserAgent:     CLI.UserAgent,
-		User:          CLI.User,
-		Password:      CLI.Password,
 		ApiKey:        CLI.ApiKey,
 		ExitOnWarning: &CLI.ExitOnWarning,
 		ExitOnInfo:    &CLI.ExitOnInfo,

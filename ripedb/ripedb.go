@@ -25,17 +25,8 @@ import (
 //	    log.Fatalf("Failed to create RipeClient: %v", err)
 //	}
 func NewRipeClient(opts *RipeClientOptions) (*RipeClient, error) {
-	var isUsingPasswordAuth = opts.User != nil || opts.Password != nil
 	var isUsingApiKeyAuth = opts.ApiKey != nil
 	var isUsingX509Auth = opts.Certificate != nil || opts.Key != nil
-
-	if opts.User != nil && opts.Password == nil {
-		return nil, fmt.Errorf("a username was provided without a password")
-	}
-
-	if opts.Password != nil && *opts.Password == "" {
-		return nil, fmt.Errorf("an empty password was provided")
-	}
 
 	if opts.ApiKey != nil && *opts.ApiKey == "" {
 		return nil, fmt.Errorf("an empty API key was provided")
@@ -50,10 +41,6 @@ func NewRipeClient(opts *RipeClientOptions) (*RipeClient, error) {
 		authMethods += 1
 	}
 
-	if isUsingPasswordAuth {
-		authMethods += 1
-	}
-
 	if isUsingX509Auth {
 		authMethods += 1
 	}
@@ -62,11 +49,7 @@ func NewRipeClient(opts *RipeClientOptions) (*RipeClient, error) {
 		return nil, fmt.Errorf("cannot use multiple authentication protocols")
 	}
 
-	if isUsingPasswordAuth {
-		slog.Debug("Using basic authentication")
-		slog.Warn("Basic authentication will be deprecated by the end of 2025")
-		return newPasswordClient(opts)
-	} else if isUsingApiKeyAuth {
+	if isUsingApiKeyAuth {
 		slog.Debug("Using API key authentication")
 		return newApiKeyClient(opts)
 	} else if isUsingX509Auth {
