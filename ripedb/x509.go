@@ -60,6 +60,12 @@ func newX509Client(opts *RipeClientOptions) (*RipeClient, error) {
 			req.URL.RawQuery = q.Encode()
 		}
 
+		if fullOpts.DryRun {
+			q := req.URL.Query()
+			q.Add("dry-run", "")
+			req.URL.RawQuery = q.Encode()
+		}
+
 		resp, err := httpClient.Do(req)
 		if err != nil {
 			return nil, err
@@ -70,7 +76,7 @@ func newX509Client(opts *RipeClientOptions) (*RipeClient, error) {
 				slog.Error("failed to close HTTP client", "error", err)
 			}
 		}()
-		return parseResponse(*resp, fullOpts.NoError)
+		return parseResponse(*resp, &fullOpts)
 	}
 
 	return &RipeClient{

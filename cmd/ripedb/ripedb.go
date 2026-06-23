@@ -20,15 +20,18 @@ type Context struct {
 }
 
 var CLI struct {
-	Debug     bool    `help:"Enable debug mode."`
-	User      *string `env:"RIPEDB_USER" help:"(DEPRECATED) The user to use for authentication."`
-	Password  *string `env:"RIPEDB_PASSWORD" help:"(DEPRECATED) The password to use for authentication."`
-	ApiKey    *string `env:"RIPEDB_APIKEY" help:"The API key to use for authentication."`
-	Key       *string `env:"RIPEDB_KEYFILE" help:"The key to use for authentication."`
-	Cert      *string `env:"RIPEDB_CERTFILE" help:"The certificate to use for authentication."`
-	Endpoint  *string `env:"RIPEDB_ENDPOINT" help:"The endpoint of the database."`
-	Source    *string `env:"RIPEDB_SOURCE" help:"The source of the database."`
-	UserAgent *string `env:"RIPEDB_USERAGENT" help:"The User-Agent for the HTTP client."`
+	Debug         bool    `env:"RIPEDB_DEBUG" help:"Enable debug mode."`
+	ApiKey        *string `env:"RIPEDB_APIKEY" help:"The API key to use for authentication."`
+	Key           *string `env:"RIPEDB_KEYFILE" help:"The key to use for authentication."`
+	Cert          *string `env:"RIPEDB_CERTFILE" help:"The certificate to use for authentication."`
+	Endpoint      *string `env:"RIPEDB_ENDPOINT" help:"The endpoint of the database."`
+	Source        *string `env:"RIPEDB_SOURCE" help:"The source of the database."`
+	UserAgent     *string `env:"RIPEDB_USERAGENT" help:"The User-Agent for the HTTP client."`
+	DryRun        bool    `env:"RIPEDB_DRY_RUN" help:"Performs are dry-run."`
+	ExitOnWarning bool    `env:"RIPEDB_EXIT_ON_WARNING" help:"Exits with an error on warning messages."`
+	ExitOnInfo    bool    `env:"RIPEDB_EXIT_ON_INFO" help:"Exits with an error on info messages."`
+	ExitOnUnknown bool    `env:"RIPEDB_EXIT_ON_UNKNOWN" help:"Exits with an error on unknown severity messages."`
+	NoColor       bool    `env:"RIPEDB_NO_COLOR" help:"Do not use colors to print to the terminal."`
 
 	Get    GetCmd    `cmd:"" help:"Fetch a resource from the RIPE database."`
 	Upsert UpsertCmd `cmd:"" help:"Create or update a resource from the RIPE database."`
@@ -46,6 +49,10 @@ type UpsertCmd struct {
 	Key      string `arg:"" name:"key" help:"The key of the resource to update."`
 	Input    string `arg:"" name:"input" help:"RPSL object file with the new resource content." type:"path"`
 	Format   bool   `default:"true" negatable:"" short:"f" help:"Format the output or return the resource in its original formatting (including spaces, end-of-lines)."`
+
+	SkipValidation    bool     `help:"Do not perform any kind of validation prior to uploading."`
+	IgnoreUnknownKeys bool     `help:"Skip validation of unknown keys."`
+	IgnoreKeys        []string `help:"Keys to ignore validation for."`
 }
 
 type DeleteCmd struct {
@@ -54,18 +61,43 @@ type DeleteCmd struct {
 	Format   bool   `default:"true" negatable:"" short:"f" help:"Format the output or return the resource in its original formatting (including spaces, end-of-lines)."`
 }
 
-func formatResponse(resp *models.Resource) {
+func formatResponse(resp *models.Resource, noColor bool) {
 	header := "# This is the RIPE Database search service.\n# The objects are in RPSL (RFC 2622) format.\n# The RIPE Database is subject to Terms and Conditions."
-	fmt.Printf("\033[90m%s\033[0m\n", header)
+	if noColor {
+		fmt.Println(header)
+	} else {
+		fmt.Printf("\033[90m%s\033[0m\n", header)
+	}
 
 	if resp.ErrorMessages != nil {
 		for _, errorMessage := range resp.ErrorMessages.ErrorMessage {
 			if errorMessage.Text != nil {
-				fmt.Printf("\033[31m%s\033[0m\n", *errorMessage.Text)
+				if noColor {
+					if errorMessage.Severity == nil || *errorMessage.Severity == "Error" {
+						fmt.Fprintln(os.Stderr, *errorMessage.Text)
+					} else {
+						fmt.Println(*errorMessage.Text)
+					}
+
+					continue
+				}
+
+				if errorMessage.Severity != nil {
+					switch *errorMessage.Severity {
+					case "Info":
+						fmt.Printf("\033[96m%s\033[0m\n", *errorMessage.Text)
+					case "Warning":
+						fmt.Printf("\033[33m%s\033[0m\n", *errorMessage.Text)
+					case "Error":
+						fmt.Fprintf(os.Stderr, "\033[31m%s\033[0m\n", *errorMessage.Text)
+					default:
+						fmt.Printf("\033[95m%s\033[0m\n", *errorMessage.Text)
+					}
+				} else {
+					fmt.Printf("\033[31m%s\033[0m\n", *errorMessage.Text)
+				}
 			}
 		}
-
-		os.Exit(1)
 	}
 
 	obj := resp.Objects.Object[0]
@@ -78,7 +110,7 @@ func formatResponse(resp *models.Resource) {
 
 	for _, attr := range obj.Attributes.Attribute {
 		fmt.Printf("%-*s", longest+2, attr.Name+":")
-		if attr.ReferencedType != nil {
+		if attr.ReferencedType != nil && !noColor {
 			link := fmt.Sprintf("https://apps.db.ripe.net/db-web-ui/lookup?source=ripe&type=%s&key=%s", *attr.ReferencedType, attr.Value)
 			fmt.Printf("\033]8;;%s\033\\\033[34m%s\033[0m\033]8;;\033\\", link, attr.Value)
 		} else {
@@ -86,7 +118,11 @@ func formatResponse(resp *models.Resource) {
 		}
 
 		if attr.Comment != nil {
-			fmt.Printf(" \033[90m# %s\033[0m", *attr.Comment)
+			if noColor {
+				fmt.Println(*attr.Comment)
+			} else {
+				fmt.Printf(" \033[90m# %s\033[0m", *attr.Comment)
+			}
 		}
 
 		fmt.Println("")
@@ -94,6 +130,10 @@ func formatResponse(resp *models.Resource) {
 }
 
 func (c *UpsertCmd) Run(ctx *Context, client *ripedb.RipeClient) error {
+	client.SetSkipKeys(c.IgnoreKeys)
+	client.SetSkipUnknownKeys(c.IgnoreUnknownKeys)
+	client.SetSkipValidation(c.SkipValidation)
+
 	resource := c.Resource
 	key := c.Key
 	input := c.Input
@@ -134,7 +174,7 @@ func (c *UpsertCmd) Run(ctx *Context, client *ripedb.RipeClient) error {
 		log.Fatal(err)
 	}
 
-	formatResponse(resp)
+	formatResponse(resp, client.GetNoColor())
 	return nil
 }
 
@@ -147,7 +187,7 @@ func (c *GetCmd) Run(ctx *Context, client *ripedb.RipeClient) error {
 		log.Fatal(err)
 	}
 
-	formatResponse(resp)
+	formatResponse(resp, client.GetNoColor())
 	return nil
 }
 
@@ -160,7 +200,7 @@ func (c *DeleteCmd) Run(ctx *Context, client *ripedb.RipeClient) error {
 		log.Fatal(err)
 	}
 
-	formatResponse(resp)
+	formatResponse(resp, client.GetNoColor())
 	return nil
 }
 
@@ -175,12 +215,15 @@ func main() {
 	slog.SetDefault(logger)
 
 	opts := ripedb.RipeClientOptions{
-		Endpoint:  CLI.Endpoint,
-		Source:    CLI.Source,
-		UserAgent: CLI.UserAgent,
-		User:      CLI.User,
-		Password:  CLI.Password,
-		ApiKey:    CLI.ApiKey,
+		Endpoint:      CLI.Endpoint,
+		Source:        CLI.Source,
+		UserAgent:     CLI.UserAgent,
+		ApiKey:        CLI.ApiKey,
+		ExitOnWarning: &CLI.ExitOnWarning,
+		ExitOnInfo:    &CLI.ExitOnInfo,
+		ExitOnUnknown: &CLI.ExitOnUnknown,
+		DryRun:        &CLI.DryRun,
+		NoColor:       &CLI.NoColor,
 	}
 
 	if CLI.Key != nil || CLI.Cert != nil {

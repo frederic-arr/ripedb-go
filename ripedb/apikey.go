@@ -4,6 +4,7 @@
 package ripedb
 
 import (
+	"encoding/base64"
 	"fmt"
 	"io"
 	"log/slog"
@@ -29,6 +30,11 @@ func newApiKeyClient(opts *RipeClientOptions) (*RipeClient, error) {
 			return nil, err
 		}
 
+		_, err = base64.StdEncoding.DecodeString(*opts.ApiKey)
+		if err != nil {
+			return nil, fmt.Errorf("API key is not in base64; be sure to put the while '<username>:<password' in base64")
+		}
+
 		req.Header.Set("User-Agent", fullOpts.UserAgent)
 		req.Header.Set("Authorization", fmt.Sprintf("Basic %s", *opts.ApiKey))
 		req.Header.Set("Accept", "application/json")
@@ -49,6 +55,13 @@ func newApiKeyClient(opts *RipeClientOptions) (*RipeClient, error) {
 			req.URL.RawQuery = q.Encode()
 		}
 
+		if fullOpts.DryRun {
+			q := req.URL.Query()
+			q.Add("dry-run", "")
+			req.URL.RawQuery = q.Encode()
+		}
+
+		slog.Debug("HTTP request", "url", req.URL.String())
 		resp, err := httpClient.Do(req)
 		if err != nil {
 			return nil, err
@@ -59,7 +72,8 @@ func newApiKeyClient(opts *RipeClientOptions) (*RipeClient, error) {
 				slog.Error("failed to close HTTP client", "error", err)
 			}
 		}()
-		return parseResponse(*resp, fullOpts.NoError)
+
+		return parseResponse(*resp, &fullOpts)
 	}
 
 	return &RipeClient{
