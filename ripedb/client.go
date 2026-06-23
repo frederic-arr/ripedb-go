@@ -61,17 +61,20 @@ type RipeClientOptions struct {
 }
 
 type ripeClientOptions struct {
-	Endpoint      string
-	Format        bool
-	Filter        bool
-	IgnoreError   bool
-	Source        string
-	UserAgent     string
-	ExitOnWarning bool
-	ExitOnInfo    bool
-	ExitOnUnknown bool
-	DryRun        bool
-	NoColor       bool
+	Endpoint        string
+	Format          bool
+	Filter          bool
+	IgnoreError     bool
+	Source          string
+	UserAgent       string
+	ExitOnWarning   bool
+	ExitOnInfo      bool
+	ExitOnUnknown   bool
+	DryRun          bool
+	NoColor         bool
+	SkipValidation  bool
+	SkipUnknownKeys bool
+	SkipKeys        []string
 }
 
 type RipeClient struct {
@@ -123,6 +126,18 @@ func (c *RipeClient) GetNoColor() bool {
 	return c.opts.NoColor
 }
 
+func (c *RipeClient) GetSkipValidation() bool {
+	return c.opts.SkipValidation
+}
+
+func (c *RipeClient) GetSkipUnknownKeys() bool {
+	return c.opts.SkipUnknownKeys
+}
+
+func (c *RipeClient) GetSkipKeys() []string {
+	return c.opts.SkipKeys
+}
+
 func (c *RipeClient) SetEndpoint(endpoint string) {
 	c.opts.Endpoint = endpoint
 }
@@ -165,6 +180,18 @@ func (c *RipeClient) SetDryRun(dryRun bool) {
 
 func (c *RipeClient) SetNoColor(noColor bool) {
 	c.opts.NoColor = noColor
+}
+
+func (c *RipeClient) SetSkipValidation(skipValidation bool) {
+	c.opts.SkipValidation = skipValidation
+}
+
+func (c *RipeClient) SetSkipUnknownKeys(skipUnknownKeys bool) {
+	c.opts.SkipUnknownKeys = skipUnknownKeys
+}
+
+func (c *RipeClient) SetSkipKeys(skipKeys []string) {
+	c.opts.SkipKeys = skipKeys
 }
 
 func (c *RipeClient) GetObject(resource string, key string) (*rpsl.Object, error) {
@@ -228,12 +255,15 @@ func (c *RipeClient) GetResource(resource string, key string) (*models.Resource,
 }
 
 func (c *RipeClient) PostResource(resource string, data models.Resource) (*models.Resource, error) {
-	timestampKeys := []string{"created", "last-modified", "dry-run"}
-	data.RemoveKeys(timestampKeys)
+	skipKeys := []string{"created", "last-modified", "dry-run"}
+	data.RemoveKeys(skipKeys)
 
-	err := models.ValidateResourceWithOptions(resource, data, false, timestampKeys)
-	if err != nil {
-		return nil, err
+	if !c.GetSkipValidation() {
+		skipKeys = append(skipKeys, c.GetSkipKeys()...)
+		err := models.ValidateResourceWithOptions(resource, data, c.GetSkipUnknownKeys(), skipKeys)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	body, err := json.Marshal(data)
@@ -245,12 +275,15 @@ func (c *RipeClient) PostResource(resource string, data models.Resource) (*model
 }
 
 func (c *RipeClient) PutResource(resource string, key string, data models.Resource) (*models.Resource, error) {
-	timestampKeys := []string{"created", "last-modified", "dry-run"}
-	data.RemoveKeys(timestampKeys)
+	skipKeys := []string{"created", "last-modified", "dry-run"}
+	data.RemoveKeys(skipKeys)
 
-	err := models.ValidateResourceWithOptions(resource, data, false, timestampKeys)
-	if err != nil {
-		return nil, err
+	if !c.GetSkipValidation() {
+		skipKeys = append(skipKeys, c.GetSkipKeys()...)
+		err := models.ValidateResourceWithOptions(resource, data, c.GetSkipUnknownKeys(), skipKeys)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	body, err := json.Marshal(data)

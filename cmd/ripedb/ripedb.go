@@ -49,6 +49,10 @@ type UpsertCmd struct {
 	Key      string `arg:"" name:"key" help:"The key of the resource to update."`
 	Input    string `arg:"" name:"input" help:"RPSL object file with the new resource content." type:"path"`
 	Format   bool   `default:"true" negatable:"" short:"f" help:"Format the output or return the resource in its original formatting (including spaces, end-of-lines)."`
+
+	SkipValidation    bool     `help:"Do not perform any kind of validation prior to uploading."`
+	IgnoreUnknownKeys bool     `help:"Skip validation of unknown keys."`
+	IgnoreKeys        []string `help:"Keys to ignore validation for."`
 }
 
 type DeleteCmd struct {
@@ -126,6 +130,10 @@ func formatResponse(resp *models.Resource, noColor bool) {
 }
 
 func (c *UpsertCmd) Run(ctx *Context, client *ripedb.RipeClient) error {
+	client.SetSkipKeys(c.IgnoreKeys)
+	client.SetSkipUnknownKeys(c.IgnoreUnknownKeys)
+	client.SetSkipValidation(c.SkipValidation)
+
 	resource := c.Resource
 	key := c.Key
 	input := c.Input
