@@ -124,6 +124,10 @@ func gatherErrors(whoisResponse *models.Resource, opts *ripeClientOptions) ([]st
 func parseResponse(resp http.Response, opts *ripeClientOptions) (*models.Resource, error) {
 	whoisResponse := &models.Resource{}
 	err := json.NewDecoder(resp.Body).Decode(whoisResponse)
+	if err != nil {
+		return nil, err
+	}
+
 	jsonBytes, err := json.Marshal(whoisResponse)
 	slog.Debug("HTTP response", "body", string(jsonBytes))
 
